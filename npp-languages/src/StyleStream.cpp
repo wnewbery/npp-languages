@@ -38,6 +38,12 @@ unsigned StyleStream::nextIndent()
 	assert(_srcPos == _stylePos);
 	if (eof()) return 0;
 	assert(_srcPos == 0 || _src[_srcPos - 1] == '\r' || _src[_srcPos - 1] == '\n');
+	//skip blank lines using default style, they are not significant
+	for (; _srcPos < _len && (_src[_srcPos] == '\r' || _src[_srcPos] == '\n'); ++_srcPos, ++_stylePos)
+	{
+		_styles[_stylePos] = 0;
+	}
+	// Read the line indent, and set default style
 	unsigned indent = 0;
 	for (; _srcPos < _len && (_src[_srcPos] == ' ' || _src[_srcPos] == '\t'); ++_srcPos, ++_stylePos, ++indent)
 	{
