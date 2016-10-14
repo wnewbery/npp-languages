@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\lexers\Haml.cpp">
+      <Filter>source\lexers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PluginMain.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StyleStream.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\lexers\Haml.h">
+      <Filter>source\lexers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseLexer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StyleStream.h">
+      <Filter>source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{e2afe5bf-fc06-4ea9-9cb8-56bdb8a6e84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\lexers">
+      <UniqueIdentifier>{e1521a22-43d1-4a15-b3b9-742c1027f286}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Config\npp-syntax-web.xml" />
+  </ItemGroup>
+</Project>

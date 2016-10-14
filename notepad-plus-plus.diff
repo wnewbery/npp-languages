@@ -1,0 +1,218 @@
+ PowerEditor/visual.net/notepadPlus.vs2015.vcxproj | 45 +++++++----------------
+ scintilla/win32/SciLexer.vcxproj                  | 13 +++----
+ scintilla/win32/ScintillaWin.cxx                  |  2 +-
+ scintilla/win32/packages.config                   |  4 +-
+ 4 files changed, 23 insertions(+), 41 deletions(-)
+
+diff --git a/PowerEditor/visual.net/notepadPlus.vs2015.vcxproj b/PowerEditor/visual.net/notepadPlus.vs2015.vcxproj
+index 8cad6e5..f2dc933 100644
+--- a/PowerEditor/visual.net/notepadPlus.vs2015.vcxproj
++++ b/PowerEditor/visual.net/notepadPlus.vs2015.vcxproj
+@@ -23,28 +23,29 @@
+     <ProjectGuid>{FCF60E65-1B78-4D1D-AB59-4FC00AC8C248}</ProjectGuid>
+     <RootNamespace>Notepad++</RootNamespace>
+     <Keyword>Win32Proj</Keyword>
++    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Release|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <PlatformToolset>v140_xp</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <PlatformToolset>v140_xp</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <PlatformToolset>v140_xp</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+-    <PlatformToolset>v140_xp</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+@@ -71,22 +72,18 @@
+     <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|Win32'">
+-    <OutDir>$(Configuration)\</OutDir>
+     <IntDir>$(Configuration)\</IntDir>
+     <LinkIncremental>false</LinkIncremental>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|x64'">
+-    <OutDir>x64\$(Configuration)\</OutDir>
+     <IntDir>x64\$(Configuration)\</IntDir>
+     <LinkIncremental>false</LinkIncremental>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Release|Win32'">
+-    <OutDir>..\bin\</OutDir>
+     <IntDir>$(Configuration)\</IntDir>
+     <LinkIncremental>false</LinkIncremental>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Release|x64'">
+-    <OutDir>..\bin64\</OutDir>
+     <IntDir>x64\$(Configuration)\</IntDir>
+     <LinkIncremental>false</LinkIncremental>
+   </PropertyGroup>
+@@ -97,14 +94,13 @@
+       <AdditionalIncludeDirectories>..\src\WinControls\AboutDlg;..\..\scintilla\include;..\include;..\src\WinControls;..\src\WinControls\ImageListSet;..\src\WinControls\OpenSaveFileDialog;..\src\WinControls\SplitterContainer;..\src\WinControls\StaticDialog;..\src\WinControls\TabBar;..\src\WinControls\ToolBar;..\src\MISC\Process;..\src\ScitillaComponent;..\src\MISC;..\src\MISC\SysMsg;..\src\WinControls\StatusBar;..\src;..\src\WinControls\StaticDialog\RunDlg;..\src\tinyxml;..\src\WinControls\ColourPicker;..\src\Win32Explr;..\src\MISC\RegExt;..\src\WinControls\TrayIcon;..\src\WinControls\shortcut;..\src\WinControls\Grid;..\src\WinControls\ContextMenu;..\src\MISC\PluginsManager;..\src\WinControls\Preference;..\src\WinControls\WindowsDlg;..\src\WinControls\TaskList;..\src\WinControls\DockingWnd;..\src\WinControls\ToolTip;..\src\MISC\Exception;..\src\MISC\Common;..\src\tinyxml\tinyXmlA;..\src\WinControls\AnsiCharPanel;..\src\WinControls\ClipboardHistory;..\src\WinControls\FindCharsInRange;..\src\WinControls\VerticalFileSwitcher;..\src\WinControls\ProjectPanel;..\src\WinControls\DocumentMap;..\src\WinControls\FunctionList;..\src\uchardet;..\src\WinControls\FileBrowser;..\src\WinControls\ReadDirectoryChanges;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_WINDOWS;_USE_64BIT_TIME_T;TIXML_USE_STL;TIXMLA_USE_STL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS=1;_CRT_NON_CONFORMING_WCSTOK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExceptionHandling>Async</ExceptionHandling>
+-      <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+       <WarningLevel>Level4</WarningLevel>
+-      <TreatWarningAsError>true</TreatWarningAsError>
++      <TreatWarningAsError>false</TreatWarningAsError>
+       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+-      <SmallerTypeCheck>true</SmallerTypeCheck>
+       <DisableSpecificWarnings>4091;4456;4457;4459</DisableSpecificWarnings>
++      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+     </ClCompile>
+     <Link>
+       <AdditionalOptions>/fixed:no %(AdditionalOptions)</AdditionalOptions>
+@@ -133,14 +129,13 @@
+       <AdditionalIncludeDirectories>..\src\WinControls\AboutDlg;..\..\scintilla\include;..\include;..\src\WinControls;..\src\WinControls\ImageListSet;..\src\WinControls\OpenSaveFileDialog;..\src\WinControls\SplitterContainer;..\src\WinControls\StaticDialog;..\src\WinControls\TabBar;..\src\WinControls\ToolBar;..\src\MISC\Process;..\src\ScitillaComponent;..\src\MISC;..\src\MISC\SysMsg;..\src\WinControls\StatusBar;..\src;..\src\WinControls\StaticDialog\RunDlg;..\src\tinyxml;..\src\WinControls\ColourPicker;..\src\Win32Explr;..\src\MISC\RegExt;..\src\WinControls\TrayIcon;..\src\WinControls\shortcut;..\src\WinControls\Grid;..\src\WinControls\ContextMenu;..\src\MISC\PluginsManager;..\src\WinControls\Preference;..\src\WinControls\WindowsDlg;..\src\WinControls\TaskList;..\src\WinControls\DockingWnd;..\src\WinControls\ToolTip;..\src\MISC\Exception;..\src\MISC\Common;..\src\tinyxml\tinyXmlA;..\src\WinControls\AnsiCharPanel;..\src\WinControls\ClipboardHistory;..\src\WinControls\FindCharsInRange;..\src\WinControls\VerticalFileSwitcher;..\src\WinControls\ProjectPanel;..\src\WinControls\DocumentMap;..\src\WinControls\FunctionList;..\src\uchardet;..\src\WinControls\FileBrowser;..\src\WinControls\ReadDirectoryChanges;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_WINDOWS;_USE_64BIT_TIME_T;TIXML_USE_STL;TIXMLA_USE_STL;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS=1;_CRT_NON_CONFORMING_WCSTOK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <ExceptionHandling>Async</ExceptionHandling>
+-      <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+       <WarningLevel>Level4</WarningLevel>
+       <TreatWarningAsError>false</TreatWarningAsError>
+       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+-      <SmallerTypeCheck>true</SmallerTypeCheck>
+       <DisableSpecificWarnings>4091;4456;4457;4459</DisableSpecificWarnings>
++      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+     </ClCompile>
+     <Link>
+       <AdditionalOptions>/fixed:no %(AdditionalOptions)</AdditionalOptions>
+@@ -178,7 +173,7 @@
+       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+       <FunctionLevelLinking>true</FunctionLevelLinking>
+       <WarningLevel>Level4</WarningLevel>
+-      <TreatWarningAsError>true</TreatWarningAsError>
++      <TreatWarningAsError>false</TreatWarningAsError>
+       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+@@ -203,14 +198,8 @@
+       <AdditionalManifestFiles>..\src\dpiAware.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+     </Manifest>
+     <PostBuildEvent>
+-      <Command>copy ..\src\config.model.xml ..\bin\config.model.xml
+-copy ..\src\langs.model.xml ..\bin\langs.model.xml
+-copy ..\src\stylers.model.xml ..\bin\stylers.model.xml
+-copy ..\src\shortcuts.xml ..\bin\shortcuts.xml
+-copy ..\src\functionList.xml ..\bin\functionList.xml
+-copy ..\src\contextMenu.xml ..\bin\contextMenu.xml
+-..\misc\vistaIconTool\changeIcon.bat "..\misc\vistaIconTool\ChangeIcon.exe" "$(OutDir)notepad++.exe"
+-</Command>
++      <Command>
++      </Command>
+     </PostBuildEvent>
+   </ItemDefinitionGroup>
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Release|x64'">
+@@ -254,14 +243,8 @@ copy ..\src\contextMenu.xml ..\bin\contextMenu.xml
+       <AdditionalManifestFiles>..\src\dpiAware.manifest;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+     </Manifest>
+     <PostBuildEvent>
+-      <Command>copy ..\src\config.model.xml ..\bin64\config.model.xml
+-copy ..\src\langs.model.xml ..\bin64\langs.model.xml
+-copy ..\src\stylers.model.xml ..\bin64\stylers.model.xml
+-copy ..\src\shortcuts.xml ..\bin64\shortcuts.xml
+-copy ..\src\functionList.xml ..\bin64\functionList.xml
+-copy ..\src\contextMenu.xml ..\bin64\contextMenu.xml
+-..\misc\vistaIconTool\changeIcon.bat "..\misc\vistaIconTool\ChangeIcon.exe" "$(OutDir)notepad++.exe"
+-</Command>
++      <Command>
++      </Command>
+     </PostBuildEvent>
+   </ItemDefinitionGroup>
+   <ItemGroup>
+@@ -659,4 +642,4 @@ copy ..\src\contextMenu.xml ..\bin64\contextMenu.xml
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/scintilla/win32/SciLexer.vcxproj b/scintilla/win32/SciLexer.vcxproj
+index f7f7057..c2d4c25 100644
+--- a/scintilla/win32/SciLexer.vcxproj
++++ b/scintilla/win32/SciLexer.vcxproj
+@@ -27,7 +27,7 @@
+   <PropertyGroup>
+     <ConfigurationType>DynamicLibrary</ConfigurationType>
+     <CharacterSet>Unicode</CharacterSet>
+-    <PlatformToolset>v120_xp</PlatformToolset>
++    <PlatformToolset>v140</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Unicode Debug|Win32'" Label="Configuration">
+     <UseDebugLibraries>true</UseDebugLibraries>
+@@ -52,7 +52,6 @@
+   <PropertyGroup Label="UserMacros" />
+   <PropertyGroup>
+     <LinkIncremental>false</LinkIncremental>
+-    <NuGetPackageImportStamp>ba6a8a13</NuGetPackageImportStamp>
+   </PropertyGroup>
+   <ItemDefinitionGroup>
+     <ClCompile>
+@@ -132,14 +131,14 @@
+   </ItemGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+-    <Import Project="..\..\PowerEditor\visual.net\packages\boost.1.58.0.0\build\native\boost.targets" Condition="Exists('..\..\PowerEditor\visual.net\packages\boost.1.58.0.0\build\native\boost.targets')" />
+-    <Import Project="..\..\PowerEditor\visual.net\packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets" Condition="Exists('..\..\PowerEditor\visual.net\packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets')" />
++    <Import Project="..\..\..\packages\boost.1.62.0.0\build\native\boost.targets" Condition="Exists('..\..\..\packages\boost.1.62.0.0\build\native\boost.targets')" />
++    <Import Project="..\..\..\packages\boost_regex-vc140.1.62.0.0\build\native\boost_regex-vc140.targets" Condition="Exists('..\..\..\packages\boost_regex-vc140.1.62.0.0\build\native\boost_regex-vc140.targets')" />
+   </ImportGroup>
+   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+     <PropertyGroup>
+-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
++      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+     </PropertyGroup>
+-    <Error Condition="!Exists('..\..\PowerEditor\visual.net\packages\boost.1.58.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\PowerEditor\visual.net\packages\boost.1.58.0.0\build\native\boost.targets'))" />
+-    <Error Condition="!Exists('..\..\PowerEditor\visual.net\packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\PowerEditor\visual.net\packages\boost_regex-vc120.1.58.0.0\build\native\boost_regex-vc120.targets'))" />
++    <Error Condition="!Exists('..\..\..\packages\boost.1.62.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\boost.1.62.0.0\build\native\boost.targets'))" />
++    <Error Condition="!Exists('..\..\..\packages\boost_regex-vc140.1.62.0.0\build\native\boost_regex-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\boost_regex-vc140.1.62.0.0\build\native\boost_regex-vc140.targets'))" />
+   </Target>
+ </Project>
+\ No newline at end of file
+diff --git a/scintilla/win32/ScintillaWin.cxx b/scintilla/win32/ScintillaWin.cxx
+index 45eb37e..6cc5671 100644
+--- a/scintilla/win32/ScintillaWin.cxx
++++ b/scintilla/win32/ScintillaWin.cxx
+@@ -3237,7 +3237,7 @@ sptr_t PASCAL ScintillaWin::CTWndProc(
+ 
+ sptr_t ScintillaWin::DirectFunction(
+     sptr_t ptr, UINT iMessage, uptr_t wParam, sptr_t lParam) {
+-	PLATFORM_ASSERT(::GetCurrentThreadId() == ::GetWindowThreadProcessId(reinterpret_cast<ScintillaWin *>(ptr)->MainHWND(), NULL));
++	//PLATFORM_ASSERT(::GetCurrentThreadId() == ::GetWindowThreadProcessId(reinterpret_cast<ScintillaWin *>(ptr)->MainHWND(), NULL));
+ 	return reinterpret_cast<ScintillaWin *>(ptr)->WndProc(iMessage, wParam, lParam);
+ }
+ 
+diff --git a/scintilla/win32/packages.config b/scintilla/win32/packages.config
+index ec2adc2..b269c69 100644
+--- a/scintilla/win32/packages.config
++++ b/scintilla/win32/packages.config
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+ <packages>
+-  <package id="boost" version="1.58.0.0" targetFramework="Native" />
+-  <package id="boost_regex-vc120" version="1.58.0.0" targetFramework="Native" />
++  <package id="boost" version="1.62.0.0" targetFramework="native" />
++  <package id="boost_regex-vc140" version="1.62.0.0" targetFramework="native" />
+ </packages>
+\ No newline at end of file
