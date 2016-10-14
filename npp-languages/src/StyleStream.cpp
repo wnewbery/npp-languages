@@ -82,12 +82,14 @@ void StyleStream::readRestOfLine(char style)
 	assert(_srcPos == _stylePos);
 	for (; _srcPos < _len; ++_srcPos, ++_stylePos)
 	{
-		_styles[_stylePos] = style;
 		if (_src[_srcPos] == '\n')
 		{
+			_styles[_stylePos] = 0;
 			++_srcPos;
 			++_stylePos;
 			break;
 		}
+		else if (_src[_srcPos] == '\r') _styles[_stylePos] = 0;
+		else _styles[_stylePos] = style;
 	}
 }
