@@ -51,4 +51,6 @@ private:
 	void tagStart(StyleStream &stream);
 	/**Rest of tag line after name, id and class shortcuts.*/
 	void tagLine(StyleStream &stream);
+	/**Filter block starting with ':'.*/
+	void filter(StyleStream &stream);
 };

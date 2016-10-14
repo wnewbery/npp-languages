@@ -25,7 +25,9 @@ enum Haml::Style
 	OPERATOR,
 	TAG,
 	CLASS,
-	ID
+	ID,
+	FILTER,
+	UNKNOWNFILTER
 };
 void Haml::style(StyleStream &stream)
 {
@@ -62,6 +64,7 @@ void Haml::line(StyleStream &stream)
 	case '%': return tag(stream);
 	case '#': return tagId(stream);
 	case '.': return tagClass(stream);
+	case ':': return filter(stream);
 	default: //TODO: not supported yet
 		stream.readRestOfLine(ERROR);
 		_currentIndent = stream.nextIndent();
@@ -128,4 +131,21 @@ void Haml::tagLine(StyleStream &stream)
 {
 	stream.readRestOfLine(DEFAULT);
 	_currentIndent = stream.nextIndent();
+}
+
+void Haml::filter(StyleStream &stream)
+{
+	assert(stream.peek() == ':');
+	stream.readRestOfLine(FILTER);
+
+	while (!stream.eof())
+	{
+		auto indent = stream.nextIndent();
+		if (indent <= _currentIndent)
+		{
+			_currentIndent = indent;
+			break;
+		}
+		stream.readRestOfLine(UNKNOWNFILTER);
+	}
 }
