@@ -21,7 +21,11 @@ enum Haml::Style
 	DEFAULT,
 	HTMLCOMMENT,
 	SILENTCOMMENT,
-	ERROR
+	ERROR,
+	OPERATOR,
+	TAG,
+	CLASS,
+	ID
 };
 void Haml::style(StyleStream &stream)
 {
@@ -55,6 +59,9 @@ void Haml::line(StyleStream &stream)
 			_currentIndent = stream.nextIndent();
 			return;
 		}
+	case '%': return tag(stream);
+	case '#': return tagId(stream);
+	case '.': return tagClass(stream);
 	default: //TODO: not supported yet
 		stream.readRestOfLine(ERROR);
 		_currentIndent = stream.nextIndent();
@@ -84,4 +91,41 @@ void Haml::comment(StyleStream &stream, Style style)
 		}
 		stream.readRestOfLine(style);
 	}
+}
+
+void Haml::tag(StyleStream &stream)
+{
+	assert(stream.peek() == '%');
+	stream.advance(TAG);
+	stream.nextXmlName(TAG);
+	tagStart(stream);
+}
+void Haml::tagId(StyleStream &stream)
+{
+	assert(stream.peek() == '#');
+	stream.advance(OPERATOR);
+	stream.nextXmlName(ID);
+	tagStart(stream);
+}
+void Haml::tagClass(StyleStream &stream)
+{
+	assert(stream.peek() == '.');
+	stream.advance(OPERATOR);
+	stream.nextXmlName(CLASS);
+	tagStart(stream);
+}
+void Haml::tagStart(StyleStream &stream)
+{
+	if (stream.eof()) return;
+	switch (stream.peek())
+	{
+	case '#': return tagId(stream);
+	case '.': return tagClass(stream);
+	default: return tagLine(stream);
+	}
+}
+void Haml::tagLine(StyleStream &stream)
+{
+	stream.readRestOfLine(DEFAULT);
+	_currentIndent = stream.nextIndent();
 }

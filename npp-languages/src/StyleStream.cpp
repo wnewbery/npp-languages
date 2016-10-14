@@ -46,6 +46,31 @@ unsigned StyleStream::nextIndent()
 	return indent;
 }
 
+void StyleStream::nextXmlName(char style)
+{
+	assert(_srcPos == _stylePos);
+	auto inc = [](char c)
+	{
+		switch (c)
+		{
+		case '.':
+		case '#':
+		case '{':
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\r':
+			return false;
+		default:
+			return true;
+		}
+	};
+	for (; _srcPos < _len && inc(_src[_srcPos]); ++_srcPos, ++_stylePos)
+	{
+		_styles[_stylePos] = style;
+	}
+}
+
 void StyleStream::readRestOfLine(char style)
 {
 	assert(_srcPos == _stylePos);

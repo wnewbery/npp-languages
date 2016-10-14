@@ -41,4 +41,14 @@ private:
 	void htmlComment(StyleStream &stream);
 	void hamlComment(StyleStream &stream);
 	void comment(StyleStream &stream, Style style);
+	/**'%' tag line.*/
+	void tag(StyleStream &stream);
+	/**'#' tag line (implicit div) or '%tag#'*/
+	void tagId(StyleStream &stream);
+	/**'.' tag line (implicit div) or '%tag.'*/
+	void tagClass(StyleStream &stream);
+	/**Rest of tag line after after '%'*/
+	void tagStart(StyleStream &stream);
+	/**Rest of tag line after name, id and class shortcuts.*/
+	void tagLine(StyleStream &stream);
 };

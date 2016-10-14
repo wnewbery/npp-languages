@@ -31,6 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Config\npp-syntax-web.xml" />
+    <Xml Include="Config\npp-languages.xml" />
   </ItemGroup>
 </Project>

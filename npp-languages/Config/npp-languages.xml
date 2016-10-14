@@ -10,10 +10,14 @@
 		<!--Note: These styleID's must match the coded enumeration-->
 		<!--TODO: Generate at compile time-->
 		<LexerType name="Haml" desc="Haml" ext="">
-			<WordsStyle name="DEFAULT"        styleID="0" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="HTMLCOMMENT"    styleID="1" fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="SILENTCOMMENT"  styleID="2" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="ERROR"          styleID="3" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="DEFAULT"        styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLCOMMENT"    styleID="1"  fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="SILENTCOMMENT"  styleID="2"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ERROR"          styleID="3"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="OPERATOR"       styleID="4"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="TAG"            styleID="5"  fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="CLASS"          styleID="6"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ID"             styleID="7"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 		</LexerType>
 	</LexerStyles>
 </NotepadPlus>

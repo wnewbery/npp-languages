@@ -29,9 +29,7 @@
     <ClInclude Include="src\StyleStream.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Config\npp-syntax-web.xml">
-      <SubType>Designer</SubType>
-    </Xml>
+    <Xml Include="Config\npp-languages.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{48125156-D6A8-4DED-8301-C614D398F6B8}</ProjectGuid>
