@@ -79,6 +79,9 @@ public:
 	 * _stylePos must equal _srcPos.
 	 */
 	void readRestOfLine(char style);
+
+	/**Set the current lines fold level by its indent.*/
+	void foldLevel(int indent);
 private:
 	IDocument *_doc;
 	//TODO: Investigate different strategies here
@@ -87,6 +90,8 @@ private:
 	//copies will be an issue.
 	/**Position within the document where _styles and _str start.*/
 	unsigned _docPos;
+	/**Line number in document.*/
+	unsigned _line;
 	/**Length of _styles and _str.*/
 	unsigned _len;
 	/**Current style position in _styles.*/
@@ -97,4 +102,12 @@ private:
 	std::unique_ptr<char[]> _styles;
 	/**Source text to style.*/
 	std::unique_ptr<char[]> _src;
+
+	/**Fold indent of _line - 1.*/
+	int _prevLineIndent;
+	/**Fold indent of _line.*/
+	int _curLineIndent;
+
+	/**Advancing to next line, update state.*/
+	void nextLine();
 };

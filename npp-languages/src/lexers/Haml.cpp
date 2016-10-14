@@ -44,6 +44,7 @@ void Haml::line(StyleStream &stream)
 {
 	if (stream.eof()) return; //nothing todo
 
+	stream.foldLevel(_currentIndent);
 	switch (stream.peek())
 	{
 	case '\r':
@@ -83,6 +84,7 @@ void Haml::hamlComment(StyleStream &stream)
 void Haml::comment(StyleStream &stream, Style style)
 {
 	//All lines greater than _currentIndent
+	stream.foldLevel(_currentIndent);
 	stream.readRestOfLine(style);
 	while (!stream.eof())
 	{
@@ -92,6 +94,7 @@ void Haml::comment(StyleStream &stream, Style style)
 			_currentIndent = indent;
 			break;
 		}
+		stream.foldLevel(_currentIndent + 1);
 		stream.readRestOfLine(style);
 	}
 }
@@ -119,6 +122,7 @@ void Haml::tagClass(StyleStream &stream)
 }
 void Haml::tagStart(StyleStream &stream)
 {
+	stream.foldLevel(_currentIndent);
 	if (stream.eof()) return;
 	switch (stream.peek())
 	{
@@ -136,6 +140,7 @@ void Haml::tagLine(StyleStream &stream)
 void Haml::filter(StyleStream &stream)
 {
 	assert(stream.peek() == ':');
+	stream.foldLevel(_currentIndent);
 	stream.readRestOfLine(FILTER);
 
 	while (!stream.eof())
@@ -146,6 +151,7 @@ void Haml::filter(StyleStream &stream)
 			_currentIndent = indent;
 			break;
 		}
+		stream.foldLevel(_currentIndent + 1);
 		stream.readRestOfLine(UNKNOWNFILTER);
 	}
 }

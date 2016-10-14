@@ -16,9 +16,9 @@
 
 #include "StyleStream.h"
 #include <ILexer.h> //Scintilla
-
+#include <Scintilla.h> //Scintilla
 StyleStream::StyleStream(IDocument *doc)
-	: _doc(doc), _docPos(0), _len((unsigned)doc->Length())
+	: _doc(doc), _line(0), _docPos(0), _len((unsigned)doc->Length())
 	, _stylePos(0), _srcPos(0)
 	, _styles(new char[_len]), _src(new char[_len])
 {
@@ -39,9 +39,17 @@ unsigned StyleStream::nextIndent()
 	if (eof()) return 0;
 	assert(_srcPos == 0 || _src[_srcPos - 1] == '\r' || _src[_srcPos - 1] == '\n');
 	//skip blank lines using default style, they are not significant
-	for (; _srcPos < _len && (_src[_srcPos] == '\r' || _src[_srcPos] == '\n'); ++_srcPos, ++_stylePos)
+	while (_srcPos < _len)
 	{
-		_styles[_stylePos] = 0;
+		if (_src[_srcPos] == '\n')
+		{
+			nextLine();
+		}
+		else if (_src[_srcPos] == '\r')
+		{
+			advance(0);
+		}
+		else break;
 	}
 	// Read the line indent, and set default style
 	unsigned indent = 0;
@@ -84,12 +92,37 @@ void StyleStream::readRestOfLine(char style)
 	{
 		if (_src[_srcPos] == '\n')
 		{
-			_styles[_stylePos] = 0;
-			++_srcPos;
-			++_stylePos;
+			nextLine();
 			break;
 		}
 		else if (_src[_srcPos] == '\r') _styles[_stylePos] = 0;
 		else _styles[_stylePos] = style;
 	}
+}
+
+void StyleStream::foldLevel(int indent)
+{
+	if (_line > 0 && indent > _prevLineIndent)
+	{
+		//Previous line is fold header
+		_doc->SetLevel(_line - 1, _prevLineIndent | SC_FOLDLEVELBASE | SC_FOLDLEVELHEADERFLAG);
+	}
+
+	_doc->SetLevel(_line, indent | SC_FOLDLEVELBASE);
+	_doc->SetLineState(_line, indent);
+	_curLineIndent = indent;
+}
+
+void StyleStream::nextLine()
+{
+	assert(_src[_srcPos] == '\n');
+
+	if (_curLineIndent < 0) foldLevel(_prevLineIndent);
+	_prevLineIndent = _curLineIndent;
+	_curLineIndent = -1;
+
+	_styles[_stylePos] = 0;
+	++_srcPos;
+	++_stylePos;
+	++_line;
 }
