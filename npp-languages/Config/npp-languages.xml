@@ -25,7 +25,7 @@
 			<WordsStyle name="RUBYOPERATOR"    styleID="50" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="RUBYSTRING"      styleID="51" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYINSTRUCTION" styleID="52" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSYMBOL"      styleID="53" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYSYMBOL"      styleID="53" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYATTRIBUTE"   styleID="54" fgColor="0094FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYNUMBER"      styleID="55" fgColor="FF6A00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 		</LexerType>

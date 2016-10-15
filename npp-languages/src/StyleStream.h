@@ -103,7 +103,7 @@ public:
 	/**Reads and highlights a XML, HTML or CSS name.
 	 *
 	 * _stylePos must equal _srcPos.
-	 * Ends on the first '.', '#', '{', ' ', '\t', '=' or on the line end.
+	 * Ends on the first '.', '#', '{', '(', '[', ' ', '\t', '=' or on the line end.
 	 * Note that is is far less strict than the actual languages themselves.
 	 *
 	 * For "<htmltag>", "tag#id.class attr" and other such syntax.

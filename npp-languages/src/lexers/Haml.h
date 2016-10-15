@@ -49,6 +49,13 @@ private:
 	void tagClass(StyleStream &stream);
 	/**Rest of tag line after after '%'*/
 	void tagStart(StyleStream &stream);
+	/**{...} element attributes.*/
+	void rubyAttrs(StyleStream &stream);
+	/**[...] element object reference.*/
+	void objectRef(StyleStream &stream);
+	/**(...) element HTML attributes.*/
+	void htmlAttrs(StyleStream &stream);
+
 	/**Filter block starting with ':'.*/
 	void filter(StyleStream &stream);
 

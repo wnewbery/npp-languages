@@ -146,6 +146,120 @@ void Haml::tagStart(StyleStream &stream)
 	case '#': return tagId(stream);
 	case '.': return tagClass(stream);
 	case '=': return rubyBlock(stream);
+	case '[': return objectRef(stream);
+	case '{': return rubyAttrs(stream);
+	case '(': return htmlAttrs(stream);
+	default: return textLine(stream);
+	}
+}
+
+void Haml::rubyAttrs(StyleStream &stream)
+{
+	assert(stream.peek() == '{');
+	stream.advance(Ruby::OPERATOR);
+	int depth = 1;
+	while (depth && !stream.eof())
+	{
+		char c = stream.peek();
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			if (stream.prev() == ',')
+			{
+				stream.readRestOfLine(DEFAULT);
+				stream.foldLevel(_currentIndent + 1);
+				break;
+			}
+			else
+			{
+				stream.readRestOfLine(DEFAULT);
+				_currentIndent = stream.nextIndent();
+			}
+		case '}':
+			stream.advance(Ruby::OPERATOR);
+			--depth;
+			break;
+		case '{':
+			++depth;
+		default:
+			Ruby().token(stream);
+			break;
+		}
+	}
+	switch(stream.peek())
+	{
+	case '=': return rubyBlock(stream);
+	default: return textLine(stream);
+	}
+}
+void Haml::objectRef(StyleStream &stream)
+{
+	assert(stream.peek() == '[');
+	stream.advance(Ruby::OPERATOR);
+	int depth = 1;
+	while (depth && !stream.eof())
+	{
+		char c = stream.peek();
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			stream.readRestOfLine(DEFAULT);
+			_currentIndent = stream.nextIndent();
+			return;
+		case ']':
+			stream.advance(Ruby::OPERATOR);
+			--depth;
+			break;
+		case '[':
+			stream.advance(Ruby::OPERATOR);
+			++depth;
+			break;
+		default:
+			Ruby().token(stream);
+			break;
+		}
+	}
+	switch (stream.peek())
+	{
+	case '=': return rubyBlock(stream);
+	case '(': return htmlAttrs(stream);
+	case '{': return rubyAttrs(stream);
+	default: return textLine(stream);
+	}
+}
+void Haml::htmlAttrs(StyleStream &stream)
+{
+	assert(stream.peek() == '(');
+	stream.advance(Ruby::OPERATOR);
+	int depth = 1;
+	while (depth && !stream.eof())
+	{
+		char c = stream.peek();
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			stream.readRestOfLine(DEFAULT);
+			stream.foldLevel(_currentIndent + 1);
+			break;
+		case ')':
+			stream.advance(Ruby::OPERATOR);
+			--depth;
+			break;
+		case '(':
+			stream.advance(Ruby::OPERATOR);
+			++depth;
+			break;
+		default:
+			Ruby().token(stream);
+			break;
+		}
+	}
+	switch (stream.peek())
+	{
+	case '=': return rubyBlock(stream);
 	default: return textLine(stream);
 	}
 }

@@ -90,7 +90,9 @@ void StyleStream::nextXmlName(char style)
 		{
 		case '.':
 		case '#':
+		case '(':
 		case '{':
+		case '[':
 		case '=':
 		case ' ':
 		case '\t':
