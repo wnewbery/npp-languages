@@ -26,7 +26,10 @@ public:
 		DEFAULT = 0,
 		OPERATOR = 50,
 		STRING = 51,
-		INSTRUCTION = 52
+		INSTRUCTION = 52,
+		SYMBOL = 53,
+		ATTRIBUTE = 54,
+		NUMBER = 55
 	};
 
 	virtual void style(StyleStream &stream)override;

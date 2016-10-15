@@ -22,8 +22,13 @@
 namespace
 {
 	static const std::unordered_set<std::string> INSTRUCTIONS = {
-		"true", "false",
-		"def", "class", "module"
+		//http://ruby-doc.org/docs/keywords/1.9/
+		"BEGIN", "END", "__ENCODING__", "__FILE__", "__LINE__",
+		"alias", "and", "begin", "break", "case", "class",
+		"def", "defined?", "do", "else", "elsif", "end", "ensure",
+		"false", "for", "if", "in", "module", "next", "nil", "not", "or",
+		"redo", "rescue", "retry", "return", "self", "super", "then", "true",
+		"undef", "unless", "when", "while", "yield"
 	};
 }
 void Ruby::style(StyleStream &stream)
@@ -121,17 +126,38 @@ void Ruby::token(StyleStream &stream)
 	assert(c != '\n' && c != '\r');
 	switch (c)
 	{
-	case '.': case ',': case '?': case ':':
+	case '.': case ',': case '?':
 	case '=': case '<': case '>':
 	case '&': case '|': case '^': case '~':
 	case '*': case '/': case '%': case '+': case '-':
 	case '(': case ')': case '[': case ']': case '{': case '}':
 		stream.advance(OPERATOR);
 		break;
+	case ':':
+	{
+		auto c2 = stream.peek(1);
+		if (c2 == ':') stream.advance(OPERATOR, 2);
+		else if (c2 == ' ') stream.advance(OPERATOR);
+		else
+		{
+			stream.advance(SYMBOL);
+			stream.nextWord(SYMBOL);
+		}
+		break;
+	}
+	case '@':
+		stream.advance(ATTRIBUTE);
+		stream.nextWord(ATTRIBUTE);
+		break;
 	case '\'': case '"':
 		string(stream);
 		break;
 	default:
+		if (c >= '0' && c <= '9')
+		{
+			stream.advance(NUMBER);
+		}
+		else
 		{
 			auto word = stream.peekWord();
 			if (word.empty())

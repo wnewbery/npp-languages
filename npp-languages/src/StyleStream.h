@@ -82,6 +82,12 @@ public:
 	 * @return The number of indents processed.
 	 */
 	unsigned nextIndent();
+	/**Style the results from peekWord.*/
+	void nextWord(char style)
+	{
+		auto w = peekWord();
+		advance(style, w.size());
+	}
 	/**Style past any spaces and tabs.
 	 * _stylePos must equal _srcPos.
 	 */
