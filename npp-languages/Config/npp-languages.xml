@@ -20,6 +20,7 @@
 			<WordsStyle name="ID"              styleID="7"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="FILTER"          styleID="8"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="UNKNOWNFILTER"   styleID="9"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="DOCTYPE"         styleID="10" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="0" fontSize="" />
 
 			<WordsStyle name="RUBYOPERATOR"    styleID="50" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="RUBYSTRING"      styleID="51" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />

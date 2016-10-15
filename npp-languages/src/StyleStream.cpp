@@ -47,6 +47,13 @@ std::string StyleStream::peekWord()const
 	return {_src.get() + _srcPos, p2 - _srcPos};
 }
 
+bool StyleStream::matches(const char *str)const
+{
+	auto p = _srcPos;
+	while (*str && p < _len && *str == _src[_srcPos]) ++p, ++str;
+	return *str == '\0';
+}
+
 unsigned StyleStream::nextIndent()
 {
 	assert(_srcPos == _stylePos);

@@ -55,6 +55,8 @@ public:
 	 * A word end on any ASCII non-alpha numeric element except '_'.
 	 */
 	std::string peekWord()const;
+	/**True if upcoming text matches.*/
+	bool matches(const char *str)const;
 
 	/**Advance a byte (e.g. after peek).
 	 * _stylePos must equal _srcPos.

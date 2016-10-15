@@ -34,4 +34,6 @@ public:
 	void styleLine(StyleStream &stream);
 	/**A double or single quoted string.*/
 	void string(StyleStream &stream);
+	/**Rest of the line as a string (no delimiter)*/
+	void stringLine(StyleStream &stream);
 };

@@ -49,11 +49,11 @@ private:
 	void tagClass(StyleStream &stream);
 	/**Rest of tag line after after '%'*/
 	void tagStart(StyleStream &stream);
-	/**Rest of tag line after name, id and class shortcuts.*/
-	void tagLine(StyleStream &stream);
 	/**Filter block starting with ':'.*/
 	void filter(StyleStream &stream);
 
 	/**Ruby block with '-', '=', at the previous position.*/
 	void rubyBlock(StyleStream &stream);
+	/**Text line with Ruby #{interpolation}.*/
+	void textLine(StyleStream &stream);
 };

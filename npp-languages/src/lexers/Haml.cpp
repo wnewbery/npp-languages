@@ -28,10 +28,16 @@ enum Haml::Style
 	CLASS,
 	ID,
 	FILTER,
-	UNKNOWNFILTER
+	UNKNOWNFILTER,
+	DOCTYPE
 };
 void Haml::style(StyleStream &stream)
 {
+	//TODO: If start of document
+	if (stream.matches("!!!"))
+	{
+		stream.readRestOfLine(DOCTYPE);
+	}
 	//Potentially, this could deal with only re-styling the required subsection
 	//This would be a case of positioning stream on the first start line before the edited position
 	//then stopping the loop on the next unaltered line after
@@ -67,8 +73,18 @@ void Haml::line(StyleStream &stream)
 	case '.': return tagClass(stream);
 	case ':': return filter(stream);
 	case '=':
+	case '~':
 		stream.advance(OPERATOR);
 		return rubyBlock(stream);
+	case '!':
+	case '&':
+		stream.advance(OPERATOR);
+		if (stream.peek() == '=')
+		{
+			stream.advance(OPERATOR);
+			return rubyBlock(stream);
+		}
+		else return textLine(stream);
 	default: //TODO: not supported yet
 		stream.readRestOfLine(ERROR);
 		_currentIndent = stream.nextIndent();
@@ -132,13 +148,8 @@ void Haml::tagStart(StyleStream &stream)
 	case '#': return tagId(stream);
 	case '.': return tagClass(stream);
 	case '=': return rubyBlock(stream);
-	default: return tagLine(stream);
+	default: return textLine(stream);
 	}
-}
-void Haml::tagLine(StyleStream &stream)
-{
-	stream.readRestOfLine(DEFAULT);
-	_currentIndent = stream.nextIndent();
 }
 
 void Haml::filter(StyleStream &stream)
@@ -163,12 +174,21 @@ void Haml::filter(StyleStream &stream)
 void Haml::rubyBlock(StyleStream &stream)
 {
 	bool next;
+	bool first = true;
 	do
 	{
+		if (!first) stream.foldLevel(_currentIndent + 1);
+		first = false;
 		Ruby().styleLine(stream);
 		next = stream.prev() == ',';
 		stream.readRestOfLine(ERROR);
 	}
 	while (next);
+	_currentIndent = stream.nextIndent();
+}
+
+void Haml::textLine(StyleStream &stream)
+{
+	Ruby().stringLine(stream);
 	_currentIndent = stream.nextIndent();
 }

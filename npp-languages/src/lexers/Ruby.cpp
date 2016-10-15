@@ -90,3 +90,8 @@ void Ruby::string(StyleStream &stream)
 		}
 	}
 }
+
+void Ruby::stringLine(StyleStream &stream)
+{
+	stream.readRestOfLine(STRING);
+}
