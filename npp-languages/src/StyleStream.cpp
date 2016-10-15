@@ -60,23 +60,26 @@ unsigned StyleStream::nextIndent()
 	if (eof()) return 0;
 	assert(_srcPos == 0 || _src[_srcPos - 1] == '\r' || _src[_srcPos - 1] == '\n');
 	//skip blank lines using default style, they are not significant
-	while (_srcPos < _len)
+	//return indent of first non blank line
+	unsigned indent = 0;
+	while (!eof())
 	{
-		if (_src[_srcPos] == '\n')
+		char c = _src[_srcPos];
+		if (c == '\n')
 		{
 			nextLine();
+			indent = 0;
 		}
-		else if (_src[_srcPos] == '\r')
+		else if (c == '\r')
 		{
 			advance(0);
 		}
+		else if (c == ' ' || c == '\t')
+		{
+			advance(0);
+			++indent;
+		}
 		else break;
-	}
-	// Read the line indent, and set default style
-	unsigned indent = 0;
-	for (; _srcPos < _len && (_src[_srcPos] == ' ' || _src[_srcPos] == '\t'); ++_srcPos, ++_stylePos, ++indent)
-	{
-		_styles[_stylePos] = 0;
 	}
 	return indent;
 }

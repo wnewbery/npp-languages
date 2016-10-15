@@ -175,6 +175,7 @@ void Haml::rubyAttrs(StyleStream &stream)
 			{
 				stream.readRestOfLine(DEFAULT);
 				_currentIndent = stream.nextIndent();
+				return;
 			}
 		case '}':
 			stream.advance(Ruby::OPERATOR);
@@ -187,10 +188,13 @@ void Haml::rubyAttrs(StyleStream &stream)
 			break;
 		}
 	}
-	switch(stream.peek())
+	if (!stream.eof())
 	{
-	case '=': return rubyBlock(stream);
-	default: return textLine(stream);
+		switch(stream.peek())
+		{
+		case '=': return rubyBlock(stream);
+		default: return textLine(stream);
+		}
 	}
 }
 void Haml::objectRef(StyleStream &stream)
@@ -221,12 +225,15 @@ void Haml::objectRef(StyleStream &stream)
 			break;
 		}
 	}
-	switch (stream.peek())
+	if (!stream.eof())
 	{
-	case '=': return rubyBlock(stream);
-	case '(': return htmlAttrs(stream);
-	case '{': return rubyAttrs(stream);
-	default: return textLine(stream);
+		switch (stream.peek())
+		{
+		case '=': return rubyBlock(stream);
+		case '(': return htmlAttrs(stream);
+		case '{': return rubyAttrs(stream);
+		default: return textLine(stream);
+		}
 	}
 }
 void Haml::htmlAttrs(StyleStream &stream)
@@ -257,10 +264,13 @@ void Haml::htmlAttrs(StyleStream &stream)
 			break;
 		}
 	}
-	switch (stream.peek())
+	if (!stream.eof())
 	{
-	case '=': return rubyBlock(stream);
-	default: return textLine(stream);
+		switch (stream.peek())
+		{
+		case '=': return rubyBlock(stream);
+		default: return textLine(stream);
+		}
 	}
 }
 

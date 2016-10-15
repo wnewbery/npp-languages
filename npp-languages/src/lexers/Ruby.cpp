@@ -52,7 +52,7 @@ void Ruby::string(StyleStream &stream)
 	assert(delim == '"' || delim == '\'');
 	stream.advance(STRING);
 
-	while (true)
+	while (!stream.eof())
 	{
 		char c = stream.peek();
 		if (c == delim)
@@ -103,7 +103,7 @@ void Ruby::stringInterp(StyleStream &stream)
 {
 	assert(stream.matches("#{"));
 	stream.advance(OPERATOR, 2);
-	while (true)
+	while (!stream.eof())
 	{
 		char c = stream.peek();
 		switch (c)
