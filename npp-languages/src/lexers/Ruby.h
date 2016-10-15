@@ -36,4 +36,8 @@ public:
 	void string(StyleStream &stream);
 	/**Rest of the line as a string (no delimiter)*/
 	void stringLine(StyleStream &stream);
+	/**Interpolated string content within a line.*/
+	void stringInterp(StyleStream &stream);
+	/**Some token on the line.*/
+	void token(StyleStream &stream);
 };

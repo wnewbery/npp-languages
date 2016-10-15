@@ -50,7 +50,7 @@ std::string StyleStream::peekWord()const
 bool StyleStream::matches(const char *str)const
 {
 	auto p = _srcPos;
-	while (*str && p < _len && *str == _src[_srcPos]) ++p, ++str;
+	while (*str && p < _len && *str == _src[p]) ++p, ++str;
 	return *str == '\0';
 }
 

@@ -37,30 +37,7 @@ void Ruby::styleLine(StyleStream &stream)
 	{
 		stream.nextSpaces();
 		if (stream.eof() || stream.peek() == '\n' || stream.peek() == '\r') break;
-
-		switch (stream.peek())
-		{
-		case '.': case ',': case '?': case ':':
-		case '=': case '<': case '>':
-		case '&': case '|': case '^': case '~':
-		case '*': case '/': case '%': case '+': case '-':
-		case '(': case ')': case '[': case ']': case '{': case '}':
-			stream.advance(OPERATOR);
-			break;
-		case '\'': case '"':
-			string(stream);
-			break;
-		default:
-			{
-				auto word = stream.peekWord();
-				if (INSTRUCTIONS.count(word))
-				{
-					stream.advance(INSTRUCTION, word.size());
-				}
-				else stream.advance(DEFAULT, word.size());
-			}
-			break;
-		}
+		token(stream);
 	}
 }
 
@@ -83,8 +60,11 @@ void Ruby::string(StyleStream &stream)
 		case '\r':
 		case '\n':
 			return;
-		//case '#':
-		//case '\\':
+		case '#':
+			if (delim == '"' && stream.prev() != '\\' && stream.peek(1) == '{')
+				stringInterp(stream);
+			else stream.advance(STRING);
+			break;
 		default:
 			stream.advance(STRING);
 		}
@@ -93,5 +73,77 @@ void Ruby::string(StyleStream &stream)
 
 void Ruby::stringLine(StyleStream &stream)
 {
-	stream.readRestOfLine(STRING);
+	while (!stream.eof())
+	{
+		char c = stream.peek();
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			stream.readRestOfLine(0);
+			return;
+		case '#':
+			if (stream.prev() != '\\' && stream.peek(1) == '{')
+				stringInterp(stream);
+			else stream.advance(STRING);
+			break;
+		default:
+			stream.advance(STRING);
+			break;
+		}
+	}
+}
+
+void Ruby::stringInterp(StyleStream &stream)
+{
+	assert(stream.matches("#{"));
+	stream.advance(OPERATOR, 2);
+	while (true)
+	{
+		char c = stream.peek();
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			return;
+		case '}':
+			stream.advance(OPERATOR);
+			return;
+		default:
+			token(stream);
+		}
+	}
+}
+
+void Ruby::token(StyleStream &stream)
+{
+	char c = stream.peek();
+	assert(c != '\n' && c != '\r');
+	switch (c)
+	{
+	case '.': case ',': case '?': case ':':
+	case '=': case '<': case '>':
+	case '&': case '|': case '^': case '~':
+	case '*': case '/': case '%': case '+': case '-':
+	case '(': case ')': case '[': case ']': case '{': case '}':
+		stream.advance(OPERATOR);
+		break;
+	case '\'': case '"':
+		string(stream);
+		break;
+	default:
+		{
+			auto word = stream.peekWord();
+			if (word.empty())
+			{
+				stream.advance(0);
+			}
+			else if (INSTRUCTIONS.count(word))
+			{
+				stream.advance(INSTRUCTION, word.size());
+			}
+			else stream.advance(DEFAULT, word.size());
+		}
+		break;
+	}
 }
