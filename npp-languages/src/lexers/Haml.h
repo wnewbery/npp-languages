@@ -53,4 +53,7 @@ private:
 	void tagLine(StyleStream &stream);
 	/**Filter block starting with ':'.*/
 	void filter(StyleStream &stream);
+
+	/**Ruby block with '-', '=', at the previous position.*/
+	void rubyBlock(StyleStream &stream);
 };

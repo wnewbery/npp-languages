@@ -10,6 +10,9 @@
     <ClCompile Include="src\StyleStream.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\lexers\Ruby.cpp">
+      <Filter>source\lexers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lexers\Haml.h">
@@ -20,6 +23,9 @@
     </ClInclude>
     <ClInclude Include="src\StyleStream.h">
       <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lexers\Ruby.h">
+      <Filter>source\lexers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

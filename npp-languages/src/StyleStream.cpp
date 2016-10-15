@@ -33,6 +33,20 @@ void StyleStream::finish()
 	_doc->SetStyles(_len, _styles.get());
 }
 
+std::string StyleStream::peekWord()const
+{
+	auto p2 = _srcPos;
+	for (; p2 < _len; ++p2)
+	{
+		auto c = _src[p2];
+		if (c < 0 || c >= 0x7F || (c != '_' && (c < '0' || c > '9') && (c < 'a' || c > 'z') && (c < 'A' || c > 'Z')))
+		{
+			break;
+		}
+	}
+	return {_src.get() + _srcPos, p2 - _srcPos};
+}
+
 unsigned StyleStream::nextIndent()
 {
 	assert(_srcPos == _stylePos);
@@ -70,6 +84,7 @@ void StyleStream::nextXmlName(char style)
 		case '.':
 		case '#':
 		case '{':
+		case '=':
 		case ' ':
 		case '\t':
 		case '\n':

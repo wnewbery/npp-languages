@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\lexers\Haml.cpp" />
+    <ClCompile Include="src\lexers\Ruby.cpp" />
     <ClCompile Include="src\PluginMain.cpp" />
     <ClCompile Include="src\StyleStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BaseLexer.h" />
     <ClInclude Include="src\lexers\Haml.h" />
+    <ClInclude Include="src\lexers\Ruby.h" />
     <ClInclude Include="src\StyleStream.h" />
   </ItemGroup>
   <ItemGroup>

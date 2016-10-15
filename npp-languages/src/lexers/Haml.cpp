@@ -15,6 +15,7 @@
 // along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #include "Haml.h"
+#include "Ruby.h"
 
 enum Haml::Style
 {
@@ -57,15 +58,17 @@ void Haml::line(StyleStream &stream)
 		{
 		case '#':
 			return hamlComment(stream);
-		default: //TODO: inline Ruby code
-			stream.readRestOfLine(ERROR);
-			_currentIndent = stream.nextIndent();
-			return;
+		default:
+			stream.advance(OPERATOR);
+			return rubyBlock(stream);
 		}
 	case '%': return tag(stream);
 	case '#': return tagId(stream);
 	case '.': return tagClass(stream);
 	case ':': return filter(stream);
+	case '=':
+		stream.advance(OPERATOR);
+		return rubyBlock(stream);
 	default: //TODO: not supported yet
 		stream.readRestOfLine(ERROR);
 		_currentIndent = stream.nextIndent();
@@ -128,6 +131,7 @@ void Haml::tagStart(StyleStream &stream)
 	{
 	case '#': return tagId(stream);
 	case '.': return tagClass(stream);
+	case '=': return rubyBlock(stream);
 	default: return tagLine(stream);
 	}
 }
@@ -154,4 +158,17 @@ void Haml::filter(StyleStream &stream)
 		stream.foldLevel(_currentIndent + 1);
 		stream.readRestOfLine(UNKNOWNFILTER);
 	}
+}
+
+void Haml::rubyBlock(StyleStream &stream)
+{
+	bool next;
+	do
+	{
+		Ruby().styleLine(stream);
+		next = stream.prev() == ',';
+		stream.readRestOfLine(ERROR);
+	}
+	while (next);
+	_currentIndent = stream.nextIndent();
 }

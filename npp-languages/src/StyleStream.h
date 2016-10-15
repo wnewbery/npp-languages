@@ -17,6 +17,7 @@
 #pragma once
 #include <memory>
 #include <cassert>
+#include <string>
 class IDocument; //Scintilla
 /**Interface for IDocument to read source text and write styles.*/
 class StyleStream
@@ -33,6 +34,11 @@ public:
 		return _srcPos == _len;
 	}
 
+	/**Get the previous source element.*/
+	char prev()const
+	{
+		return _srcPos > 0 ? _src[_srcPos - 1] : '\0';
+	}
 	/**Get the next source element, but do not advance.*/
 	char peek()const
 	{
@@ -45,6 +51,11 @@ public:
 		if (_srcPos + offset >= _len) return '\0';
 		else return _src[_srcPos + offset];
 	}
+	/**Reads a word ahead, but does not advance.
+	 * A word end on any ASCII non-alpha numeric element except '_'.
+	 */
+	std::string peekWord()const;
+
 	/**Advance a byte (e.g. after peek).
 	 * _stylePos must equal _srcPos.
 	 */
@@ -56,6 +67,11 @@ public:
 		++_stylePos;
 		++_srcPos;
 	}
+	/**Advances len bytes (e.g. after peek workd).*/
+	void advance(char style, size_t len)
+	{
+		for (size_t i = 0; i < len; ++i) advance(style);
+	}
 
 	/**Start a line and return its indent level.
 	 * The current _srcPos should be a line start, or the results will be incorrect.
@@ -64,11 +80,22 @@ public:
 	 * @return The number of indents processed.
 	 */
 	unsigned nextIndent();
+	/**Style past any spaces and tabs.
+	 * _stylePos must equal _srcPos.
+	 */
+	void nextSpaces()
+	{
+		assert(_stylePos == _srcPos);
+		for (; _srcPos < _len && (_src[_srcPos] == ' ' || _src[_srcPos] == '\t'); ++_srcPos, ++_stylePos)
+		{
+			_styles[_stylePos] = 0;
+		}
+	}
 
 	/**Reads and highlights a XML, HTML or CSS name.
 	 *
 	 * _stylePos must equal _srcPos.
-	 * Ends on the first '.', '#', '{', ' ', '\t' or on the line end.
+	 * Ends on the first '.', '#', '{', ' ', '\t', '=' or on the line end.
 	 * Note that is is far less strict than the actual languages themselves.
 	 *
 	 * For "<htmltag>", "tag#id.class attr" and other such syntax.
