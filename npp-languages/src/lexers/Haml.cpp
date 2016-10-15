@@ -85,10 +85,8 @@ void Haml::line(StyleStream &stream)
 			return rubyBlock(stream);
 		}
 		else return textLine(stream);
-	default: //TODO: not supported yet
-		stream.readRestOfLine(ERROR);
-		_currentIndent = stream.nextIndent();
-		return;
+	default:
+		return textLine(stream);
 	}
 }
 
