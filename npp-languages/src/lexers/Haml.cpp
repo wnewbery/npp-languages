@@ -311,25 +311,26 @@ void Haml::rubyBlock(StyleStream &stream)
 
 void Haml::textLine(StyleStream &stream)
 {
-	while (true)
+	auto next = [&](SubStyleStream &sub)
 	{
-		auto n = ruby.findNextInterp(stream);
-		if (n >= 0)
+		while (true)
 		{
-			auto sub = stream.subStream(n);
-			html.line(sub);
-			ruby.stringInterp(stream);
-
-			if (stream.peek() == '\r' || stream.peek() =='\n')
-				break;
+			auto c = stream.peek(0);
+			if (c != '\r' && c != '\n' && c != '\0')
+			{
+				auto n = ruby.findNextInterp(stream);
+				if (n > 0)
+				{
+					stream.subStream(sub, n);
+					break;
+				}
+				else ruby.stringInterp(stream);
+			}
+			else break;
 		}
-		else
-		{
-			html.line(stream);
-			break;
-		}
-	}
-
+	};
+	SubStyleStream sub(next);
+	html.line(sub);
 	stream.readRestOfLine(ERROR);
 	_currentIndent = stream.nextIndent();
 }

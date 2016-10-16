@@ -174,7 +174,7 @@ void Ruby::token(StyleStream &stream)
 	}
 }
 
-int Ruby::findNextInterp(StyleStream &stream)
+unsigned Ruby::findNextInterp(StyleStream &stream)
 {
 	int i = 0;
 	bool escape = false;
@@ -185,7 +185,7 @@ int Ruby::findNextInterp(StyleStream &stream)
 		case '\0':
 		case '\r':
 		case '\n':
-			return -1;
+			return i;
 		case '#':
 			if (!escape && stream.peek(i + 1) == '{')
 				return i;

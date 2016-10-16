@@ -18,7 +18,7 @@
 #include <ILexer.h> //Scintilla
 #include <Scintilla.h> //Scintilla
 
-std::string StyleStream::peekWord()const
+std::string StyleStream::peekWord()
 {
 	auto p2 = _srcPos;
 	for (; p2 < _len; ++p2)
@@ -32,7 +32,7 @@ std::string StyleStream::peekWord()const
 	return {_src + _srcPos, p2 - _srcPos};
 }
 
-bool StyleStream::matches(const char *str)const
+bool StyleStream::matches(const char *str)
 {
 	auto p = _srcPos;
 	while (*str && p < _len && *str == _src[p]) ++p, ++str;
@@ -142,10 +142,10 @@ void StyleStream::nextLine()
 	++_line;
 }
 
-StyleStream StyleStream::subStream(unsigned n)
+void StyleStream::subStream(SubStyleStream &sub, unsigned n)
 {
 	assert(_srcPos == _stylePos);
-	StyleStream sub;
+
 	sub._doc = _doc;
 	sub._docPos = _docPos;
 	sub._line = _line;
@@ -159,7 +159,6 @@ StyleStream StyleStream::subStream(unsigned n)
 
 	_stylePos += n;
 	_srcPos += n;
-	return sub;
 }
 
 DocumentStyleStream::DocumentStyleStream(IDocument *doc)
@@ -191,4 +190,11 @@ void DocumentStyleStream::finish()
 	assert(_srcPos == _len);
 	_doc->StartStyling(_docPos, (char)0xFF);
 	_doc->SetStyles(_len, _styles);
+}
+
+bool SubStyleStream::onEof()
+{
+	assert(_stylePos == _srcPos && _stylePos == _len);
+	_next(*this);
+	return _srcPos == _len;
 }

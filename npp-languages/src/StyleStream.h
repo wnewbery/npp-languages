@@ -18,7 +18,9 @@
 #include <memory>
 #include <cassert>
 #include <string>
+#include <functional>
 class IDocument; //Scintilla
+class SubStyleStream;
 /**Interface for IDocument to read source text and write styles.*/
 class StyleStream
 {
@@ -32,25 +34,29 @@ public:
 	StyleStream& operator = (StyleStream&&) = default;
 
 	/**@return True if _srcPos == _len*/
-	bool eof()const
+	bool eof()
 	{
 		assert(_srcPos <= _len);
-		return _srcPos == _len;
+		if (_srcPos == _len)
+		{
+			return onEof();
+		}
+		else return false;
 	}
 
 	/**Get the previous source element.*/
-	char prev()const
+	char prev()
 	{
 		return _srcPos > 0 ? _src[_srcPos - 1] : '\0';
 	}
 	/**Get the next source element, but do not advance.*/
-	char peek()const
+	char peek()
 	{
 		assert(!eof());
 		return _src[_srcPos];
 	}
 	/**Peeks further ahead. Returns '\0' if out of range.*/
-	char peek(unsigned offset)const
+	char peek(unsigned offset)
 	{
 		if (_srcPos + offset >= _len) return '\0';
 		else return _src[_srcPos + offset];
@@ -58,9 +64,9 @@ public:
 	/**Reads a word ahead, but does not advance.
 	 * A word end on any ASCII non-alpha numeric element except '_'.
 	 */
-	std::string peekWord()const;
+	std::string peekWord();
 	/**True if upcoming text matches.*/
-	bool matches(const char *str)const;
+	bool matches(const char *str);
 
 	/**Advance a byte (e.g. after peek).
 	 * _stylePos must equal _srcPos.
@@ -122,10 +128,8 @@ public:
 	/**Set the current lines fold level by its indent.*/
 	void foldLevel(int indent);
 
-	/**Create a StyleStream for the upcoming n bytes.
-	 * Advances this stream by n bytes, and delegates setting those styles to the substream.
-	 */
-	StyleStream subStream(unsigned n);
+	/**Delegate a number of bytes to a substream.*/
+	void subStream(SubStyleStream &sub, unsigned n);
 protected:
 	IDocument *_doc;
 	//TODO: Investigate different strategies here
@@ -154,6 +158,9 @@ protected:
 
 	/**Advancing to next line, update state.*/
 	void nextLine();
+
+	/**Called when the stream reaches the end, to provide new content.*/
+	virtual bool onEof() { return true; }
 };
 
 /**Interface for IDocument to read source text and write styles.*/
@@ -164,4 +171,15 @@ public:
 	~DocumentStyleStream();
 	/**Sends any remainig style output to notepad++.*/
 	void finish();
+};
+
+class SubStyleStream : public StyleStream
+{
+public:
+	typedef std::function<void(SubStyleStream&)> Next;
+	SubStyleStream(Next next) : StyleStream(), _next(next) {}
+private:
+	Next _next;
+
+	virtual bool onEof()override;
 };

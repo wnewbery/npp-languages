@@ -45,7 +45,7 @@ public:
 	void token(StyleStream &stream);
 
 	/**Finds the number of elements to the next #{} interpolation on the current line.
-	 * @return Offset of #{ or -1.
+	 * @return Offset of #{, end of line, or end of file.
 	 */
-	int findNextInterp(StyleStream &stream);
+	unsigned findNextInterp(StyleStream &stream);
 };
