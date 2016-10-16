@@ -19,17 +19,17 @@
 
 enum Haml::Style
 {
-	DEFAULT,
-	HTMLCOMMENT,
-	SILENTCOMMENT,
-	ERROR,
-	OPERATOR,
-	TAG,
-	CLASS,
-	ID,
-	FILTER,
-	UNKNOWNFILTER,
-	DOCTYPE
+	DEFAULT = 0,
+	ERROR = 1,
+	HTMLCOMMENT = 62,
+	SILENTCOMMENT = 2,
+	OPERATOR = 4,
+	TAG = 61,
+	CLASS = 6,
+	ID = 7,
+	FILTER = 8,
+	UNKNOWNFILTER = 9,
+	DOCTYPE = 60
 };
 void Haml::style(StyleStream &stream)
 {
@@ -184,7 +184,7 @@ void Haml::rubyAttrs(StyleStream &stream)
 		case '{':
 			++depth;
 		default:
-			Ruby().token(stream);
+			ruby.token(stream);
 			break;
 		}
 	}
@@ -221,7 +221,7 @@ void Haml::objectRef(StyleStream &stream)
 			++depth;
 			break;
 		default:
-			Ruby().token(stream);
+			ruby.token(stream);
 			break;
 		}
 	}
@@ -260,7 +260,7 @@ void Haml::htmlAttrs(StyleStream &stream)
 			++depth;
 			break;
 		default:
-			Ruby().token(stream);
+			ruby.token(stream);
 			break;
 		}
 	}
@@ -301,7 +301,7 @@ void Haml::rubyBlock(StyleStream &stream)
 	{
 		if (!first) stream.foldLevel(_currentIndent + 1);
 		first = false;
-		Ruby().styleLine(stream);
+		ruby.styleLine(stream);
 		next = stream.prev() == ',';
 		stream.readRestOfLine(ERROR);
 	}
@@ -311,6 +311,25 @@ void Haml::rubyBlock(StyleStream &stream)
 
 void Haml::textLine(StyleStream &stream)
 {
-	Ruby().stringLine(stream);
+	while (true)
+	{
+		auto n = ruby.findNextInterp(stream);
+		if (n >= 0)
+		{
+			auto sub = stream.subStream(n);
+			html.line(sub);
+			ruby.stringInterp(stream);
+
+			if (stream.peek() == '\r' || stream.peek() =='\n')
+				break;
+		}
+		else
+		{
+			html.line(stream);
+			break;
+		}
+	}
+
+	stream.readRestOfLine(ERROR);
 	_currentIndent = stream.nextIndent();
 }

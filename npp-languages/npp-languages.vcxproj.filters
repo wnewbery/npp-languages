@@ -13,6 +13,9 @@
     <ClCompile Include="src\lexers\Ruby.cpp">
       <Filter>source\lexers</Filter>
     </ClCompile>
+    <ClCompile Include="src\lexers\Html.cpp">
+      <Filter>source\lexers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lexers\Haml.h">
@@ -25,6 +28,9 @@
       <Filter>source</Filter>
     </ClInclude>
     <ClInclude Include="src\lexers\Ruby.h">
+      <Filter>source\lexers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lexers\Html.h">
       <Filter>source\lexers</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,37 +15,35 @@
 // along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include "BaseLexer.h"
 #include <memory>
-/**Lexer for Ruby*/
-class Ruby : public BaseLexer
+/**Lexer for HTML*/
+class Html : public BaseLexer
 {
 public:
 	enum Style
 	{
 		DEFAULT = 0,
-		OPERATOR = 50,
-		STRING = 51,
-		INSTRUCTION = 52,
-		SYMBOL = 53,
-		ATTRIBUTE = 54,
-		NUMBER = 55
+		ERROR = 1,
+		DOCTYPE = 60,
+		TAG = 61,
+		COMMENT = 62,
+		ATTRIBUTE = 63,
+		ATTRIBUTEVALUE = 64,
+		ATTRIBUTEEQ = 64,
+		ENTITY = 66
 	};
 
-	virtual void style(StyleStream &stream)override;
-	/**Style a upto the end of the line. Used by HAML etc.*/
-	void styleLine(StyleStream &stream);
-	/**A double or single quoted string.*/
-	void string(StyleStream &stream);
-	/**Rest of the line as a string (no delimiter)*/
-	void stringLine(StyleStream &stream);
-	/**Interpolated string content within a line.*/
-	void stringInterp(StyleStream &stream);
-	/**Some token on the line.*/
-	void token(StyleStream &stream);
+	virtual void style(StyleStream &stream)override {}
 
-	/**Finds the number of elements to the next #{} interpolation on the current line.
-	 * @return Offset of #{ or -1.
-	 */
-	int findNextInterp(StyleStream &stream);
+	void line(StyleStream &stream);
+
+	void entity(StyleStream &stream);
+
+	void tag(StyleStream &stream);
+	void attribute(StyleStream &stream);
 };

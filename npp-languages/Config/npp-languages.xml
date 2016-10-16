@@ -10,24 +10,29 @@
 		<!--Note: These styleID's must match the coded enumeration-->
 		<!--TODO: Generate at compile time-->
 		<LexerType name="Haml" desc="Haml" ext="">
-			<WordsStyle name="DEFAULT"         styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="HTMLCOMMENT"     styleID="1"  fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="SILENTCOMMENT"   styleID="2"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="ERROR"           styleID="3"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="OPERATOR"        styleID="4"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="TAG"             styleID="5"  fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="CLASS"           styleID="6"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="ID"              styleID="7"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="FILTER"          styleID="8"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="UNKNOWNFILTER"   styleID="9"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="DOCTYPE"         styleID="10" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="DEFAULT"            styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ERROR"              styleID="1"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="SILENTCOMMENT"      styleID="2"  fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="OPERATOR"           styleID="4"  fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="CLASS"              styleID="6"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ID"                 styleID="7"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="FILTER"             styleID="8"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="UNKNOWNFILTER"      styleID="9"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 
-			<WordsStyle name="RUBYOPERATOR"    styleID="50" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSTRING"      styleID="51" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYINSTRUCTION" styleID="52" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSYMBOL"      styleID="53" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYATTRIBUTE"   styleID="54" fgColor="0094FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYNUMBER"      styleID="55" fgColor="FF6A00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYOPERATOR"       styleID="50" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYSTRING"         styleID="51" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYINSTRUCTION"    styleID="52" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYSYMBOL"         styleID="53" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYATTRIBUTE"      styleID="54" fgColor="0094FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYNUMBER"         styleID="55" fgColor="FF6A00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+
+			<WordsStyle name="HTMLDOCTYPE"        styleID="60" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLTAG"            styleID="61" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLCOMMENT"        styleID="62" fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTE"      styleID="63" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTEVALUE" styleID="64" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTEEQ"    styleID="65" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLENTITY"         styleID="66" fgColor="000000" bgColor="FEFDE0" fontName="" fontStyle="2" fontSize="" />
 		</LexerType>
 	</LexerStyles>
 </NotepadPlus>

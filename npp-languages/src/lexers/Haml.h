@@ -16,6 +16,8 @@
 
 #pragma once
 #include "BaseLexer.h"
+#include "Ruby.h"
+#include "Html.h"
 #include <memory>
 /**Lexer for http://haml.info/
  * Because most of HAML is context sensitive, this implements a near complete parser, rather than
@@ -28,6 +30,8 @@ public:
 private:
 	enum Style;
 	unsigned _currentIndent;
+	Ruby ruby;
+	Html html;
 
 	/**Parsers a new line / statement. This must be called on a starting line, not in the
 	 * middle of a multi-line structure as there is no way to determine the syntax from

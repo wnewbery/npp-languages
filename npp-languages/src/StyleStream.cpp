@@ -17,21 +17,6 @@
 #include "StyleStream.h"
 #include <ILexer.h> //Scintilla
 #include <Scintilla.h> //Scintilla
-StyleStream::StyleStream(IDocument *doc)
-	: _doc(doc), _line(0), _docPos(0), _len((unsigned)doc->Length())
-	, _stylePos(0), _srcPos(0)
-	, _styles(new char[_len]), _src(new char[_len])
-{
-	doc->GetCharRange(_src.get(), (int)_docPos, (int)_len);
-}
-
-void StyleStream::finish()
-{
-	assert(_stylePos == _len);
-	assert(_srcPos == _len);
-	_doc->StartStyling(_docPos, (char)0xFF);
-	_doc->SetStyles(_len, _styles.get());
-}
 
 std::string StyleStream::peekWord()const
 {
@@ -44,7 +29,7 @@ std::string StyleStream::peekWord()const
 			break;
 		}
 	}
-	return {_src.get() + _srcPos, p2 - _srcPos};
+	return {_src + _srcPos, p2 - _srcPos};
 }
 
 bool StyleStream::matches(const char *str)const
@@ -98,6 +83,9 @@ void StyleStream::nextXmlName(char style)
 		case '[':
 		case '=':
 		case ' ':
+		case '"':
+		case '>':
+		case '\'':
 		case '\t':
 		case '\n':
 		case '\r':
@@ -152,4 +140,55 @@ void StyleStream::nextLine()
 	++_srcPos;
 	++_stylePos;
 	++_line;
+}
+
+StyleStream StyleStream::subStream(unsigned n)
+{
+	assert(_srcPos == _stylePos);
+	StyleStream sub;
+	sub._doc = _doc;
+	sub._docPos = _docPos;
+	sub._line = _line;
+	sub._len = n;
+	sub._stylePos = 0;
+	sub._srcPos = 0;
+	sub._styles = _styles + _stylePos;
+	sub._src = _src + _srcPos;
+	sub._prevLineIndent = _prevLineIndent;
+	sub._curLineIndent = _curLineIndent;
+
+	_stylePos += n;
+	_srcPos += n;
+	return sub;
+}
+
+DocumentStyleStream::DocumentStyleStream(IDocument *doc)
+{
+	_doc = doc;
+	_line = 0;
+	_docPos = 0;
+	_len = (unsigned)doc->Length();
+	_stylePos = 0;
+	_srcPos = 0;
+
+	std::unique_ptr<char[]> styles(new char[_len]);
+	std::unique_ptr<char[]> src(new char[_len]);
+	doc->GetCharRange(src.get(), (int)_docPos, (int)_len);
+
+	_styles = styles.release();
+	_src = src.release();
+}
+
+DocumentStyleStream::~DocumentStyleStream()
+{
+	delete[] _styles;
+	delete[] _src;
+}
+
+void DocumentStyleStream::finish()
+{
+	assert(_stylePos == _len);
+	assert(_srcPos == _len);
+	_doc->StartStyling(_docPos, (char)0xFF);
+	_doc->SetStyles(_len, _styles);
 }

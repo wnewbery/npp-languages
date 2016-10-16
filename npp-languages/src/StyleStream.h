@@ -23,10 +23,14 @@ class IDocument; //Scintilla
 class StyleStream
 {
 public:
-	StyleStream(IDocument *doc);
+	/**Create a StyleStream for an entire document.*/
+	StyleStream() {}
 
-	/**Sends any remainig style output to notepad++.*/
-	void finish();
+	StyleStream(const StyleStream&) = delete;
+	StyleStream(StyleStream&&) = default;
+	StyleStream& operator = (const StyleStream&) = delete;
+	StyleStream& operator = (StyleStream&&) = default;
+
 	/**@return True if _srcPos == _len*/
 	bool eof()const
 	{
@@ -103,7 +107,7 @@ public:
 	/**Reads and highlights a XML, HTML or CSS name.
 	 *
 	 * _stylePos must equal _srcPos.
-	 * Ends on the first '.', '#', '{', '(', '[', ' ', '\t', '=' or on the line end.
+	 * Ends on the first '.', '#', '{', '(', '[', ' ', '\t', '=', ''', '"', '>' or on the line end.
 	 * Note that is is far less strict than the actual languages themselves.
 	 *
 	 * For "<htmltag>", "tag#id.class attr" and other such syntax.
@@ -117,7 +121,12 @@ public:
 
 	/**Set the current lines fold level by its indent.*/
 	void foldLevel(int indent);
-private:
+
+	/**Create a StyleStream for the upcoming n bytes.
+	 * Advances this stream by n bytes, and delegates setting those styles to the substream.
+	 */
+	StyleStream subStream(unsigned n);
+protected:
 	IDocument *_doc;
 	//TODO: Investigate different strategies here
 	//The basic assumption with this implementation is that reading and writing single bytes to
@@ -134,9 +143,9 @@ private:
 	/**Current read position in _str.*/
 	unsigned _srcPos;
 	/**Styles for each source text byte.*/
-	std::unique_ptr<char[]> _styles;
+	char *_styles;
 	/**Source text to style.*/
-	std::unique_ptr<char[]> _src;
+	char *_src;
 
 	/**Fold indent of _line - 1.*/
 	int _prevLineIndent;
@@ -145,4 +154,14 @@ private:
 
 	/**Advancing to next line, update state.*/
 	void nextLine();
+};
+
+/**Interface for IDocument to read source text and write styles.*/
+class DocumentStyleStream : public StyleStream
+{
+public:
+	DocumentStyleStream(IDocument *doc);
+	~DocumentStyleStream();
+	/**Sends any remainig style output to notepad++.*/
+	void finish();
 };

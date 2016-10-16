@@ -173,3 +173,31 @@ void Ruby::token(StyleStream &stream)
 		break;
 	}
 }
+
+int Ruby::findNextInterp(StyleStream &stream)
+{
+	int i = 0;
+	bool escape = false;
+	while (true)
+	{
+		switch (stream.peek(i))
+		{
+		case '\0':
+		case '\r':
+		case '\n':
+			return -1;
+		case '#':
+			if (!escape && stream.peek(i + 1) == '{')
+				return i;
+			escape = false;
+			break;
+		case '\\':
+			escape = !escape;
+			break;
+		default:
+			escape = false;
+			break;
+		}
+		++i;
+	}
+}

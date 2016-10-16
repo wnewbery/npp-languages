@@ -62,7 +62,7 @@ public:
 	}
 	virtual void SCI_METHOD Lex(unsigned int startPos, int lengthDoc, int initStyle, IDocument *pAccess)override
 	{
-		StyleStream stream(pAccess);
+		DocumentStyleStream stream(pAccess);
 		style(stream);
 		stream.finish();
 	}
