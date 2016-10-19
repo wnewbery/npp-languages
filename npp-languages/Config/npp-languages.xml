@@ -5,6 +5,8 @@
 			<!--Note: List copied from langs.model.xml for HTML with Notepad++ 6.6.9-->
 			<Keywords name="instre1">!doctype a abbr accept accept-charset accesskey acronym action address align alink alt applet archive area article aside audio axis b background base basefont bdo bgcolor big blockquote body border br button canvas caption cellpadding cellspacing center char charoff charset checkbox checked cite class classid clear code codebase codetype col colgroup color cols colspan command compact content contenteditable contextmenu coords data datafld dataformatas datalist datapagesize datasrc datetime dd declare defer del details dfn dir disabled div dl draggable dropzone dt em embed enctype event face fieldset figcaption figure file font footer for form frame frameborder frameset h1 h2 h3 h4 h5 h6 head header height hgroup hidden hr href hreflang hspace html http-equiv i id iframe image img input ins isindex ismap kbd keygen label lang language leftmargin legend li link longdesc map marginheight marginwidth mark marquee maxlength media menu meta meter method multiple name nav noframes nohref noresize noscript noshade nowrap object ol onabort onafterprint onbeforeonload onbeforeprint onblur oncanplay oncanplaythrough onchange onclick oncontextmenu ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange ondurationchange onemptied onended onerror onfocus onformchange onforminput onhaschange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmessage onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpause onplay onplaying onpopstate onprogress onratechange onreadystatechange onredo onreset onresize onscroll onseeked onseeking onselect onselect onstalled onstorage onsubmit onsubmit onsuspend ontimeupdate onundo onunload onunload onvolumechange onwaiting optgroup option output p param password placeholder pre profile progress prompt public q radio readonly rel reset rev rows rowspan rp rt ruby rules s samp scheme scope script section select selected shape size small source span spellcheck src standby start strike strong style sub submit summary sup tabindex table target tbody td text textarea tfoot th thead time title topmargin tr tt type u ul usemap valign value valuetype var version video vlink vspace wbr width xml xmlns</Keywords>
 		</Language>
+		<Language name="Markdown" ext="md" commentLine="/">
+		</Language>
 	</Languages>
 	<LexerStyles>
 		<!--Note: These styleID's must match the coded enumeration-->
@@ -17,7 +19,7 @@
 			<WordsStyle name="CLASS"              styleID="6"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="ID"                 styleID="7"  fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="FILTER"             styleID="8"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="UNKNOWNFILTER"      styleID="9"  fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="UNKNOWNFILTER"      styleID="9"  fgColor="808080" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 
 			<WordsStyle name="RUBYOPERATOR"       styleID="50" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="RUBYSTRING"         styleID="51" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
@@ -33,6 +35,25 @@
 			<WordsStyle name="HTMLATTRIBUTEVALUE" styleID="64" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="HTMLATTRIBUTEEQ"    styleID="65" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="HTMLENTITY"         styleID="66" fgColor="000000" bgColor="FEFDE0" fontName="" fontStyle="2" fontSize="" />
+		</LexerType>
+		<LexerType name="Markdown" desc="Markdown" ext="">
+			<WordsStyle name="DEFAULT"            styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ERROR"              styleID="1"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLENTITY"         styleID="66" fgColor="000000" bgColor="FEFDE0" fontName="" fontStyle="2" fontSize="" />
+			<WordsStyle name="HEADER"             styleID="30" fgColor="0026FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="BOLD"               styleID="31" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="ITALIC"             styleID="32" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" />
+			<!--TODO: 34 was always red-->
+			<WordsStyle name="CODE"               styleID="33" fgColor="000000" bgColor="DDDDDD" fontName="" fontStyle="0" fontSize="" />
+			<!--35 is "bad brace colour"-->
+			<WordsStyle name="IMAGE"              styleID="36" fgColor="00137F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<!--TODO: 37 didnt seem to work, got a light gray-->
+			<WordsStyle name="LINK"               styleID="38" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="BLOCKQUOTE"         styleID="39" fgColor="000000" bgColor="CCCCCC" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="LIST"               styleID="40" fgColor="00C9FF" bgColor="EEEEEE" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="THEMATICBREAK"      styleID="41" fgColor="000000" bgColor="3F7F7F" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="STRIKETHROUGH"      styleID="42" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="4" fontSize="" />
+			<WordsStyle name="HARDNEWLINE"        styleID="43" fgColor="000000" bgColor="FF6A00" fontName="" fontStyle="0" fontSize="" />
 		</LexerType>
 	</LexerStyles>
 </NotepadPlus>

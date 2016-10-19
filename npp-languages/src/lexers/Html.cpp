@@ -18,11 +18,14 @@
 #include <cassert>
 #include <string>
 
-namespace
+void advanceXmlName(StyleStream &stream, char style)
 {
-	bool isAlphaNumeric(char c)
+	while (true)
 	{
-		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+		auto c = stream.peek();
+		if (c < 0) return;
+		if (c < 128 && c != '-' && c != '_' && !isAlphaNumeric((char)c)) return;
+		stream.advance(style);
 	}
 }
 
@@ -132,7 +135,7 @@ void Html::tag(StyleStream &stream)
 }
 void Html::attribute(StyleStream &stream)
 {
-	stream.nextXmlName(ATTRIBUTE);
+	advanceXmlName(stream, ATTRIBUTE);
 	if (stream.eof() || stream.peek() != '=') return;
 	stream.advance(ATTRIBUTEEQ);
 

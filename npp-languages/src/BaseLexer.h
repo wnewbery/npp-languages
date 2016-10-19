@@ -18,11 +18,13 @@
 #include <ILexer.h> //Scintilla
 #include <memory>
 #include "StyleStream.h"
+#include <iostream>
 
 class BaseLexer : public ILexer
 {
 public:
 	//BaseLexer API
+	BaseLexer() {}
 	virtual ~BaseLexer() {}
 
 	virtual void style(StyleStream &stream) = 0;
@@ -64,7 +66,6 @@ public:
 	{
 		DocumentStyleStream stream(pAccess);
 		style(stream);
-		stream.finish();
 	}
 	virtual void SCI_METHOD Fold(unsigned int startPos, int lengthDoc, int initStyle, IDocument *pAccess)override
 	{

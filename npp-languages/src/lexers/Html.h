@@ -21,6 +21,9 @@
 
 #include "BaseLexer.h"
 #include <memory>
+
+/**Ends on the first ASCII value that is not '-', '_', a letter or a number.*/
+void advanceXmlName(StyleStream &stream, char style);
 /**Lexer for HTML*/
 class Html : public BaseLexer
 {

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\lexers\Haml.cpp" />
     <ClCompile Include="src\lexers\Html.cpp" />
+    <ClCompile Include="src\lexers\Markdown.cpp" />
     <ClCompile Include="src\lexers\Ruby.cpp" />
     <ClCompile Include="src\PluginMain.cpp" />
     <ClCompile Include="src\StyleStream.cpp" />
@@ -29,6 +30,7 @@
     <ClInclude Include="src\BaseLexer.h" />
     <ClInclude Include="src\lexers\Haml.h" />
     <ClInclude Include="src\lexers\Html.h" />
+    <ClInclude Include="src\lexers\Markdown.h" />
     <ClInclude Include="src\lexers\Ruby.h" />
     <ClInclude Include="src\StyleStream.h" />
   </ItemGroup>

@@ -7,14 +7,17 @@
     <ClCompile Include="src\PluginMain.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="src\StyleStream.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="src\lexers\Ruby.cpp">
       <Filter>source\lexers</Filter>
     </ClCompile>
     <ClCompile Include="src\lexers\Html.cpp">
       <Filter>source\lexers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lexers\Markdown.cpp">
+      <Filter>source\lexers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StyleStream.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +34,9 @@
       <Filter>source\lexers</Filter>
     </ClInclude>
     <ClInclude Include="src\lexers\Html.h">
+      <Filter>source\lexers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lexers\Markdown.h">
       <Filter>source\lexers</Filter>
     </ClInclude>
   </ItemGroup>

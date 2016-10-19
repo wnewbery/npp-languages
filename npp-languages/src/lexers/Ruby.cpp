@@ -40,7 +40,7 @@ void Ruby::styleLine(StyleStream &stream)
 {
 	while (true)
 	{
-		stream.nextSpaces();
+		stream.advanceSpTab();
 		if (stream.eof() || stream.peek() == '\n' || stream.peek() == '\r') break;
 		token(stream);
 	}
@@ -52,6 +52,7 @@ void Ruby::string(StyleStream &stream)
 	assert(delim == '"' || delim == '\'');
 	stream.advance(STRING);
 
+	bool escape = false;
 	while (!stream.eof())
 	{
 		char c = stream.peek();
@@ -65,19 +66,29 @@ void Ruby::string(StyleStream &stream)
 		case '\r':
 		case '\n':
 			return;
+		case '\\':
+			escape = true;
+			stream.advance(STRING);
+			break;
 		case '#':
-			if (delim == '"' && stream.prev() != '\\' && stream.peek(1) == '{')
-				stringInterp(stream);
-			else stream.advance(STRING);
+			if (escape || delim != '"' || stream.peek(1) != '{')
+			{
+				stream.advance(STRING);
+				escape = false;
+			}
+			else stringInterp(stream);
 			break;
 		default:
+			escape = false;
 			stream.advance(STRING);
+			break;
 		}
 	}
 }
 
 void Ruby::stringLine(StyleStream &stream)
 {
+	bool escape = false;
 	while (!stream.eof())
 	{
 		char c = stream.peek();
@@ -85,14 +96,22 @@ void Ruby::stringLine(StyleStream &stream)
 		{
 		case '\r':
 		case '\n':
-			stream.readRestOfLine(0);
+			stream.advanceEol(0);
 			return;
+		case '\\':
+			escape = true;
+			stream.advance(STRING);
+			break;
 		case '#':
-			if (stream.prev() != '\\' && stream.peek(1) == '{')
-				stringInterp(stream);
-			else stream.advance(STRING);
+			if (escape || stream.peek(1) != '{')
+			{
+				stream.advance(STRING);
+				escape = false;
+			}
+			else stringInterp(stream);
 			break;
 		default:
+			escape = false;
 			stream.advance(STRING);
 			break;
 		}
@@ -141,13 +160,13 @@ void Ruby::token(StyleStream &stream)
 		else
 		{
 			stream.advance(SYMBOL);
-			stream.nextWord(SYMBOL);
+			name(stream, SYMBOL);
 		}
 		break;
 	}
 	case '@':
 		stream.advance(ATTRIBUTE);
-		stream.nextWord(ATTRIBUTE);
+		name(stream, ATTRIBUTE);
 		break;
 	case '\'': case '"':
 		string(stream);
@@ -159,19 +178,38 @@ void Ruby::token(StyleStream &stream)
 		}
 		else
 		{
-			auto word = stream.peekWord();
+			std::string word;
+			while (true)
+			{
+				auto c2 = stream.peek((unsigned)word.size());
+				if (c2 < 0 || !(c2 == '_' || c == '?' || c == '!' || isAlphaNumeric((char)c2))) break;
+				else word.push_back((char)c2);
+			}
 			if (word.empty())
 			{
 				stream.advance(0);
 			}
 			else if (INSTRUCTIONS.count(word))
 			{
-				stream.advance(INSTRUCTION, word.size());
+				stream.advance(INSTRUCTION, (unsigned)word.size());
 			}
-			else stream.advance(DEFAULT, word.size());
+			else stream.advance(DEFAULT, (unsigned)word.size());
 		}
 		break;
 	}
+}
+
+void Ruby::name(StyleStream &stream, Style style, bool method)
+{
+	int c;
+	while (true)
+	{
+		c = stream.peek();
+		if (c < 0) break;
+		else if (c == '_' || isAlphaNumeric((char)c)) stream.advance(style);
+		else break;
+	}
+	if (method && (c == '!' || c == '?')) stream.advance(style);
 }
 
 unsigned Ruby::findNextInterp(StyleStream &stream)
@@ -182,7 +220,7 @@ unsigned Ruby::findNextInterp(StyleStream &stream)
 	{
 		switch (stream.peek(i))
 		{
-		case '\0':
+		case EOF:
 		case '\r':
 		case '\n':
 			return i;

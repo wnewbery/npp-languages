@@ -28,7 +28,20 @@ class Haml : public BaseLexer
 public:
 	virtual void style(StyleStream &stream)override;
 private:
-	enum Style;
+	enum Style
+	{
+		DEFAULT = 0,
+		ERROR = 1,
+		HTMLCOMMENT = Html::COMMENT,
+		SILENTCOMMENT = 2,
+		OPERATOR = 4,
+		TAG = 61,
+		CLASS = 6,
+		ID = 7,
+		FILTER = 8,
+		UNKNOWNFILTER = 9,
+		DOCTYPE = 60
+	};
 	unsigned _currentIndent;
 	Ruby ruby;
 	Html html;

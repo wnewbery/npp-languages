@@ -15,8 +15,6 @@
 // along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 //#define SCI_NAMESPACE  Notepad++ does not support this!
-#include <Windows.h>
-
 #include <string> //must include before ExternalLexer.h
 #include <ILexer.h> //must include before LexerModule.h
 #include <LexerModule.h> //must include before ExternalLexer.h
@@ -28,6 +26,7 @@
 
 #include "BaseLexer.h"
 #include "lexers/Haml.h"
+#include "lexers/Markdown.h"
 
 namespace
 {
@@ -52,7 +51,8 @@ namespace
 	};
 	static const auto NPP_CMD_MENU_CNT = sizeof(NPP_CMD_MENU) / sizeof(NPP_CMD_MENU[0]);
 	static const LexerInfo LEXERS[] = {
-		{"Haml", L"Haml", lexerFactory<Haml>}
+		{"Haml", L"Haml", lexerFactory<Haml>},
+		{"Markdown", L"Markdown", lexerFactory<Markdown>}
 	};
 	static const auto LEXER_CNT = sizeof(LEXERS) / sizeof(LEXERS[0]);
 
@@ -99,7 +99,7 @@ extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *outCount)
 	*outCount = static_cast<int>(NPP_CMD_MENU_CNT);
 	return const_cast<FuncItem*>(NPP_CMD_MENU);
 }
-extern "C" __declspec(dllexport) void beNotified(SCNotification *)
+extern "C" __declspec(dllexport) void beNotified(SCNotification *msg)
 {
 }
 extern "C" __declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam)

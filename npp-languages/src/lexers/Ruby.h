@@ -43,6 +43,8 @@ public:
 	void stringInterp(StyleStream &stream);
 	/**Some token on the line.*/
 	void token(StyleStream &stream);
+	/**Name string for variable, symbol, etc.*/
+	void name(StyleStream &stream, Style style, bool method=false);
 
 	/**Finds the number of elements to the next #{} interpolation on the current line.
 	 * @return Offset of #{, end of line, or end of file.

@@ -19,148 +19,318 @@
 #include <cassert>
 #include <string>
 #include <functional>
+#include <vector>
 class IDocument; //Scintilla
-class SubStyleStream;
-/**Interface for IDocument to read source text and write styles.*/
+
+inline bool isAlphaNumeric(char c)
+{
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+/**Interface for lexer to read source text and write styles.
+ * Able to store a number of sections that are transparent to the streams operation.
+ */
 class StyleStream
 {
 public:
-	/**Create a StyleStream for an entire document.*/
-	StyleStream() {}
+	enum SingleLineTag { singleLineTag };
 
-	StyleStream(const StyleStream&) = delete;
-	StyleStream(StyleStream&&) = default;
-	StyleStream& operator = (const StyleStream&) = delete;
-	StyleStream& operator = (StyleStream&&) = default;
-
-	/**@return True if _srcPos == _len*/
-	bool eof()
+	StyleStream() : _sections(), _section(0), _pos(0), _line(0) {}
+	StyleStream(StyleStream &stream, SingleLineTag)
+		: StyleStream()
 	{
-		assert(_srcPos <= _len);
-		if (_srcPos == _len)
+		addLine(stream);
+	}
+	StyleStream(char *src, char *styles, unsigned len)
+		: StyleStream()
+	{
+		Section sec = {src, styles, len};
+		_sections.push_back(sec);
+	}
+
+	void addLine(StyleStream &stream)
+	{
+		addSection(stream, stream.lineLen());
+		stream.advanceLine(0);
+	}
+	void addLineWithEol(StyleStream &stream)
+	{
+		addSection(stream, stream.fullLineLen());
+	}
+	void addSection(StyleStream &stream, unsigned len)
+	{
+		while (len > 0)
 		{
-			return onEof();
-		}
-		else return false;
-	}
+			assert(!stream.eof());
+			const auto &sec = stream._sections[stream._section];
+			Section newSec = {sec._src + stream._pos, sec._styles + stream._pos, stream._line};
+			unsigned remaining = sec._len - stream._pos;
+			if (len <= remaining) newSec._len = len;
+			else newSec._len = remaining;
 
-	/**Get the previous source element.*/
-	char prev()
-	{
-		return _srcPos > 0 ? _src[_srcPos - 1] : '\0';
-	}
-	/**Get the next source element, but do not advance.*/
-	char peek()
-	{
-		assert(!eof());
-		return _src[_srcPos];
-	}
-	/**Peeks further ahead. Returns '\0' if out of range.*/
-	char peek(unsigned offset)
-	{
-		if (_srcPos + offset >= _len) return '\0';
-		else return _src[_srcPos + offset];
-	}
-	/**Reads a word ahead, but does not advance.
-	 * A word end on any ASCII non-alpha numeric element except '_'.
-	 */
-	std::string peekWord();
-	/**True if upcoming text matches.*/
-	bool matches(const char *str);
-
-	/**Advance a byte (e.g. after peek).
-	 * _stylePos must equal _srcPos.
-	 */
-	void advance(char style)
-	{
-		assert(!eof());
-		assert(_stylePos == _srcPos);
-		_styles[_stylePos] = style;
-		++_stylePos;
-		++_srcPos;
-	}
-	/**Advances len bytes (e.g. after peek workd).*/
-	void advance(char style, size_t len)
-	{
-		for (size_t i = 0; i < len; ++i) advance(style);
-	}
-
-	/**Start a line and return its indent level.
-	 * The current _srcPos should be a line start, or the results will be incorrect.
-	 * _stylePos must equal _srcPos, and style will be advanced by setting the default style (0).
-	 * Tabs and spaces are used for indent, tabs counting as one space.
-	 * @return The number of indents processed.
-	 */
-	unsigned nextIndent();
-	/**Style the results from peekWord.*/
-	void nextWord(char style)
-	{
-		auto w = peekWord();
-		advance(style, w.size());
-	}
-	/**Style past any spaces and tabs.
-	 * _stylePos must equal _srcPos.
-	 */
-	void nextSpaces()
-	{
-		assert(_stylePos == _srcPos);
-		for (; _srcPos < _len && (_src[_srcPos] == ' ' || _src[_srcPos] == '\t'); ++_srcPos, ++_stylePos)
-		{
-			_styles[_stylePos] = 0;
+			assert(newSec._len > 0 && newSec._len <= len);
+			_sections.push_back(newSec);
+			stream.skip(newSec._len);
+			len -= newSec._len;
 		}
 	}
 
-	/**Reads and highlights a XML, HTML or CSS name.
-	 *
-	 * _stylePos must equal _srcPos.
-	 * Ends on the first '.', '#', '{', '(', '[', ' ', '\t', '=', ''', '"', '>' or on the line end.
-	 * Note that is is far less strict than the actual languages themselves.
-	 *
-	 * For "<htmltag>", "tag#id.class attr" and other such syntax.
-	 */
-	void nextXmlName(char style);
+	bool eof()const
+	{
+		return _section >= _sections.size();
+	}
+	int peek(unsigned p = 0)const
+	{
+		if (eof()) return -1;
 
-	/**Advance to the next line, setting its style.
-	 * _stylePos must equal _srcPos.
-	 */
-	void readRestOfLine(char style);
+		int section = _section;
+		int pos = _pos;
+		unsigned i = 0;
+		while (true)
+		{
+			if (pos == _sections[section]._len)
+			{
+				++section;
+				pos = 0;
+			}
+			if (section >= _sections.size()) return -1;
+			if (i == p) break;
+			++i;
+			++pos;
+		}
+		return _sections[section]._src[pos];
+	}
 
-	/**Set the current lines fold level by its indent.*/
-	void foldLevel(int indent);
+	//src lookaheads
+	bool matches(char c, unsigned n)const
+	{
+		for (unsigned p = 0; p < n; ++p)
+		{
+			if (peek(p) != c) return false;
+		}
+		return true;
+	}
+	bool matches(const char *str)const
+	{
+		for (int i = 0; *str; ++str, ++i)
+		{
+			if (peek(i) != *str) return false;
+		}
+		return true;
+	}
+	unsigned countSp(unsigned start = 0)const
+	{
+		return countChr(' ', start);
+	}
+	unsigned countChr(char c, unsigned start = 0)const
+	{
+		unsigned p = 0;
+		while (peek(p + start) == c) ++p;
+		return p;
+	}
+	bool isWsAt(unsigned p)const
+	{
+		auto c = peek(p);
+		return c == ' ' || c == '\t';
+	}
+	bool lineContains(char c, unsigned p = 0)const
+	{
+		while (true)
+		{
+			auto c2 = peek(p++);
+			if (c2 < 0 || c2 == '\r' || c2 == '\n') return false;
+			if (c2 == c) return true;
+		}
+	}
+	bool isBlankLine(unsigned start = 0)const
+	{
+		while (true)
+		{
+			auto c = peek(start++);
+			if (c < 0 || c == '\r' || c == '\n') return true;
+			if (c != ' ' && c != '\t') return false;
+		}
+	}
 
-	/**Delegate a number of bytes to a substream.*/
-	void subStream(SubStyleStream &sub, unsigned n);
+	unsigned lineLen(unsigned start = 0)const
+	{
+		unsigned p = start;
+		while (true)
+		{
+			auto c2 = peek(p);
+			if (c2 < 0 || c2 == '\r' || c2 == '\n') break;
+			++p;
+		}
+		return p - start;
+	}
+	unsigned eolLen(unsigned start = 0)const
+	{
+		auto c = peek(start);
+		if (c < 0) return 0; //end of document section
+		if (c == '\n') return 1; //\n
+		assert(c == '\r');
+		if (peek(start + 1) == '\n') return 2; //\r\n
+		return 1; //\r
+	}
+	unsigned fullLineLen(unsigned start = 0)const
+	{
+		unsigned n = lineLen(start);
+		return n + eolLen(start + n);
+	}
+	//style
+	/**Style next n elements.*/
+	void advance(char style, unsigned n = 1)
+	{
+		for (unsigned i = 0; i < n; ++i)
+		{
+			assert(!eof());
+			assert(peek() != '\r' && peek() != '\n');
+			_sections[_section]._styles[_pos] = (char)style;
+			++_pos;
+			nextSection();
+		}
+	}
+	/**Style rest of line.*/
+	void advanceLine(char style, char eolStyle = 0)
+	{
+		while (true)
+		{
+			auto c = peek();
+			if (c < 0) return;
+			else if (c == '\r' || c == '\n') return advanceEol(style);
+			else advance(style);
+		}
+	}
+	void advanceWithEol(char style, unsigned n = 1)
+	{
+		for (unsigned i = 0; i < n;)
+		{
+			assert(!eof());
+			if (peek() == '\r' || peek() == '\n')
+			{
+				i += eolLen();
+				assert(i <= n);
+				advanceEol(style);
+			}
+			else
+			{
+				advance(style);
+				++i;
+			}
+		}
+	}
+	/**Style EOL and update line number.*/
+	void advanceEol(char style = 0)
+	{
+		assert(!eof());
+		auto c = peek();
+		if (c == '\n')
+		{
+			_sections[_section]._styles[_pos] = style;
+			++_line;
+			nextSection();
+		}
+		else
+		{
+			assert(c == '\r');
+			++_line;
+			_sections[_section]._styles[_pos] = style;
+			++_pos;
+			nextSection();
+			if (peek() == '\n')
+			{
+				_sections[_section]._styles[_pos] = style;
+				++_pos;
+				nextSection();
+			}
+			return;
+		}
+	}
+	/**Style ' ' and '\t'*/
+	void advanceSpTab(char style = 0)
+	{
+		assert(!eof());
+		while (true)
+		{
+			switch (peek())
+			{
+			case ' ':
+			case '\t':
+				advance(style);
+				break;
+			default:
+				return;
+			}
+		}
+	}
+	/**Style ' ' and '\t' and return the count.*/
+	unsigned advanceIndent(char style = 0)
+	{
+		unsigned n = 0;
+		while (true)
+		{
+			auto c = peek();
+			if (c == ' ' || c == '\t')
+			{
+				++n;
+				advance(style);
+			}
+			else break;
+		}
+		return n;
+	}
+	//fold current line
+	void foldLevel(int level) {}
 protected:
-	IDocument *_doc;
-	//TODO: Investigate different strategies here
-	//The basic assumption with this implementation is that reading and writing single bytes to
-	//Notepad++ will be slow, and that documents will never be large enough that making complete
-	//copies will be an issue.
-	/**Position within the document where _styles and _str start.*/
-	unsigned _docPos;
-	/**Line number in document.*/
+	struct Section
+	{
+		char *_src;
+		char *_styles;
+		unsigned _len;
+		/**First line number.*/
+		unsigned _line;
+	};
+	std::vector<Section> _sections;
+	/**Current position in _sections.*/
+	unsigned _section;
+	/**Current position in _sections[_section] _src and _styles.*/
+	unsigned _pos;
+	/**Current document line number.*/
 	unsigned _line;
-	/**Length of _styles and _str.*/
-	unsigned _len;
-	/**Current style position in _styles.*/
-	unsigned _stylePos;
-	/**Current read position in _str.*/
-	unsigned _srcPos;
-	/**Styles for each source text byte.*/
-	char *_styles;
-	/**Source text to style.*/
-	char *_src;
+	IDocument *_doc;
 
-	/**Fold indent of _line - 1.*/
-	int _prevLineIndent;
-	/**Fold indent of _line.*/
-	int _curLineIndent;
-
-	/**Advancing to next line, update state.*/
-	void nextLine();
-
-	/**Called when the stream reaches the end, to provide new content.*/
-	virtual bool onEof() { return true; }
+	/**Moves to next _section if _pos reached the end.*/
+	void nextSection()
+	{
+		assert(!eof());
+		if (_pos == _sections[_section]._len)
+		{
+			++_section;
+			_pos = 0;
+			if (!eof()) _line = _sections[_section]._line;
+		}
+	}
+	/**Advance without styling. Used when creating sub streams for other languages.*/
+	void skip(unsigned n = 1)
+	{
+		for (unsigned i = 0; i < n;)
+		{
+			assert(!eof());
+			char c = peek();
+			if (c == '\r' || c == '\n')
+			{
+				i += eolLen();
+				assert(i <= n);
+				advanceEol(); //TODO: this will set styles, which is wasted effort
+			}
+			else
+			{
+				++_pos;
+				++i;
+				nextSection();
+			}
+		}
+	}
 };
 
 /**Interface for IDocument to read source text and write styles.*/
@@ -169,17 +339,6 @@ class DocumentStyleStream : public StyleStream
 public:
 	DocumentStyleStream(IDocument *doc);
 	~DocumentStyleStream();
-	/**Sends any remainig style output to notepad++.*/
-	void finish();
-};
-
-class SubStyleStream : public StyleStream
-{
-public:
-	typedef std::function<void(SubStyleStream&)> Next;
-	SubStyleStream(Next next) : StyleStream(), _next(next) {}
 private:
-	Next _next;
-
-	virtual bool onEof()override;
+	IDocument *_doc;
 };

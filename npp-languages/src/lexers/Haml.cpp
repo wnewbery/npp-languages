@@ -17,31 +17,49 @@
 #include "Haml.h"
 #include "Ruby.h"
 
-enum Haml::Style
+namespace
 {
-	DEFAULT = 0,
-	ERROR = 1,
-	HTMLCOMMENT = 62,
-	SILENTCOMMENT = 2,
-	OPERATOR = 4,
-	TAG = 61,
-	CLASS = 6,
-	ID = 7,
-	FILTER = 8,
-	UNKNOWNFILTER = 9,
-	DOCTYPE = 60
-};
+	unsigned nextIndent(StyleStream &stream)
+	{
+		if (stream.eof()) return 0;
+
+		//assert(_srcPos == 0 || _src[_srcPos - 1] == '\r' || _src[_srcPos - 1] == '\n');
+		//skip blank lines using default style, they are not significant
+		//return indent of first non blank line
+		unsigned indent = 0;
+		while (true)
+		{
+			char c = stream.peek();
+			if (c == '\n')
+			{
+				stream.advanceEol();
+				indent = 0;
+			}
+			else if (c == '\r')
+			{
+				stream.advanceEol();
+			}
+			else if (c == ' ' || c == '\t')
+			{
+				stream.advance(0);
+				++indent;
+			}
+			else return indent;
+		}
+	}
+}
+
 void Haml::style(StyleStream &stream)
 {
 	//TODO: If start of document
 	if (stream.matches("!!!"))
 	{
-		stream.readRestOfLine(DOCTYPE);
+		stream.advanceLine(DOCTYPE);
 	}
 	//Potentially, this could deal with only re-styling the required subsection
 	//This would be a case of positioning stream on the first start line before the edited position
 	//then stopping the loop on the next unaltered line after
-	_currentIndent = stream.nextIndent();
+	_currentIndent = nextIndent(stream);
 	while (!stream.eof())
 	{
 		line(stream);
@@ -56,7 +74,7 @@ void Haml::line(StyleStream &stream)
 	{
 	case '\r':
 	case '\n':
-		return stream.readRestOfLine(DEFAULT);
+		return stream.advanceLine(DEFAULT);
 	case '/':
 		return htmlComment(stream);
 	case '-':
@@ -102,17 +120,17 @@ void Haml::comment(StyleStream &stream, Style style)
 {
 	//All lines greater than _currentIndent
 	stream.foldLevel(_currentIndent);
-	stream.readRestOfLine(style);
+	stream.advanceLine(style);
 	while (!stream.eof())
 	{
-		auto indent = stream.nextIndent();
+		auto indent = nextIndent(stream);
 		if (indent <= _currentIndent)
 		{
 			_currentIndent = indent;
 			break;
 		}
 		stream.foldLevel(_currentIndent + 1);
-		stream.readRestOfLine(style);
+		stream.advanceLine(style);
 	}
 }
 
@@ -120,21 +138,21 @@ void Haml::tag(StyleStream &stream)
 {
 	assert(stream.peek() == '%');
 	stream.advance(TAG);
-	stream.nextXmlName(TAG);
+	advanceXmlName(stream, TAG);
 	tagStart(stream);
 }
 void Haml::tagId(StyleStream &stream)
 {
 	assert(stream.peek() == '#');
 	stream.advance(OPERATOR);
-	stream.nextXmlName(ID);
+	advanceXmlName(stream, ID);
 	tagStart(stream);
 }
 void Haml::tagClass(StyleStream &stream)
 {
 	assert(stream.peek() == '.');
 	stream.advance(OPERATOR);
-	stream.nextXmlName(CLASS);
+	advanceXmlName(stream, CLASS);
 	tagStart(stream);
 }
 void Haml::tagStart(StyleStream &stream)
@@ -158,6 +176,7 @@ void Haml::rubyAttrs(StyleStream &stream)
 	assert(stream.peek() == '{');
 	stream.advance(Ruby::OPERATOR);
 	int depth = 1;
+	bool lineContinuation = false;
 	while (depth && !stream.eof())
 	{
 		char c = stream.peek();
@@ -165,24 +184,30 @@ void Haml::rubyAttrs(StyleStream &stream)
 		{
 		case '\r':
 		case '\n':
-			if (stream.prev() == ',')
+			if (lineContinuation)
 			{
-				stream.readRestOfLine(DEFAULT);
+				stream.advanceLine(DEFAULT);
 				stream.foldLevel(_currentIndent + 1);
 				break;
 			}
 			else
 			{
-				stream.readRestOfLine(DEFAULT);
-				_currentIndent = stream.nextIndent();
+				stream.advanceLine(DEFAULT);
+				_currentIndent = nextIndent(stream);
 				return;
 			}
 		case '}':
-			stream.advance(Ruby::OPERATOR);
 			--depth;
+			stream.advance(Ruby::OPERATOR);
 			break;
 		case '{':
 			++depth;
+			stream.advance(Ruby::OPERATOR);
+			break;
+		case ',':
+			lineContinuation = true;
+			stream.advance(Ruby::OPERATOR);
+			break;
 		default:
 			ruby.token(stream);
 			break;
@@ -209,8 +234,8 @@ void Haml::objectRef(StyleStream &stream)
 		{
 		case '\r':
 		case '\n':
-			stream.readRestOfLine(DEFAULT);
-			_currentIndent = stream.nextIndent();
+			stream.advanceLine(DEFAULT);
+			_currentIndent = nextIndent(stream);
 			return;
 		case ']':
 			stream.advance(Ruby::OPERATOR);
@@ -248,7 +273,7 @@ void Haml::htmlAttrs(StyleStream &stream)
 		{
 		case '\r':
 		case '\n':
-			stream.readRestOfLine(DEFAULT);
+			stream.advanceLine(DEFAULT);
 			stream.foldLevel(_currentIndent + 1);
 			break;
 		case ')':
@@ -278,18 +303,18 @@ void Haml::filter(StyleStream &stream)
 {
 	assert(stream.peek() == ':');
 	stream.foldLevel(_currentIndent);
-	stream.readRestOfLine(FILTER);
+	stream.advanceLine(FILTER);
 
 	while (!stream.eof())
 	{
-		auto indent = stream.nextIndent();
+		auto indent = nextIndent(stream);
 		if (indent <= _currentIndent)
 		{
 			_currentIndent = indent;
 			break;
 		}
 		stream.foldLevel(_currentIndent + 1);
-		stream.readRestOfLine(UNKNOWNFILTER);
+		stream.advanceLine(UNKNOWNFILTER);
 	}
 }
 
@@ -301,36 +326,32 @@ void Haml::rubyBlock(StyleStream &stream)
 	{
 		if (!first) stream.foldLevel(_currentIndent + 1);
 		first = false;
+		auto len = stream.lineLen();
+		next = len > 0 && stream.peek(len - 1) == ',';
 		ruby.styleLine(stream);
-		next = stream.prev() == ',';
-		stream.readRestOfLine(ERROR);
+		stream.advanceLine(ERROR);
 	}
 	while (next);
-	_currentIndent = stream.nextIndent();
+	_currentIndent = nextIndent(stream);
 }
 
 void Haml::textLine(StyleStream &stream)
 {
-	auto next = [&](SubStyleStream &sub)
+	StyleStream htmlStream;
+	while (true)
 	{
-		while (true)
+		auto interp = ruby.findNextInterp(stream);
+		if (interp > 0) htmlStream.addSection(stream, interp);
+
+		auto c = stream.peek();
+		if (c == '#') ruby.stringInterp(stream);
+		else
 		{
-			auto c = stream.peek(0);
-			if (c != '\r' && c != '\n' && c != '\0')
-			{
-				auto n = ruby.findNextInterp(stream);
-				if (n > 0)
-				{
-					stream.subStream(sub, n);
-					break;
-				}
-				else ruby.stringInterp(stream);
-			}
-			else break;
+			assert(c < 0 || c == '\r' || c == '\n');
+			break;
 		}
-	};
-	SubStyleStream sub(next);
-	html.line(sub);
-	stream.readRestOfLine(ERROR);
-	_currentIndent = stream.nextIndent();
+	}
+	html.line(htmlStream);
+	stream.advanceLine(ERROR);
+	_currentIndent = nextIndent(stream);
 }
