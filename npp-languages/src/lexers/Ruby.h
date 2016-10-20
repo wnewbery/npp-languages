@@ -17,6 +17,9 @@
 #pragma once
 #include "BaseLexer.h"
 #include <memory>
+#ifdef ERROR
+#undef ERROR
+#endif
 /**Lexer for Ruby*/
 class Ruby : public BaseLexer
 {
@@ -24,22 +27,37 @@ public:
 	enum Style
 	{
 		DEFAULT = 0,
-		OPERATOR = 50,
-		STRING = 51,
-		INSTRUCTION = 52,
-		SYMBOL = 53,
-		ATTRIBUTE = 54,
-		NUMBER = 55
+		ERROR = 1,
+		COMMENT = 4,
+		NUMBER = 81,
+		INSTRUCTION = 82,
+		STRING = 83,
+		CHARACTER = 84,
+		CLASS_DEF = 85,
+		METHOD_DEF = 86,
+		OPERATOR = 87,
+		REGEX= 89,
+		GLOBAL = 90,
+		SYMBOL = 91,
+		MODULE_DEF = 92,
+		INSTANCE_VAR = 93,
+		CLASS_VAR = 94,
+		BACKTICKS = 95
 	};
 
 	virtual void style(StyleStream &stream)override;
 	/**Style a upto the end of the line. Used by HAML etc.*/
 	void styleLine(StyleStream &stream);
-	/**A double or single quoted string.*/
+	/**A quoted string, regex, etc. string with escapes and interpolation.*/
 	void string(StyleStream &stream);
+	void stringBody(StyleStream &stream,
+		char delimL, char delimR,
+		Style style, bool interpolated);
+	void regex(StyleStream &stream);
+	void regexModifiers(StyleStream &stream);
 	/**Rest of the line as a string (no delimiter)*/
 	void stringLine(StyleStream &stream);
-	/**Interpolated string content within a line.*/
+	/**Interpolated string content.*/
 	void stringInterp(StyleStream &stream);
 	/**Some token on the line.*/
 	void token(StyleStream &stream);

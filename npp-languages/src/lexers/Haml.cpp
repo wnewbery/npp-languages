@@ -329,7 +329,6 @@ void Haml::rubyBlock(StyleStream &stream)
 		auto len = stream.lineLen();
 		next = len > 0 && stream.peek(len - 1) == ',';
 		ruby.styleLine(stream);
-		stream.advanceLine(ERROR);
 	}
 	while (next);
 	_currentIndent = nextIndent(stream);

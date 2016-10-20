@@ -30,65 +30,135 @@ namespace
 		"redo", "rescue", "retry", "return", "self", "super", "then", "true",
 		"undef", "unless", "when", "while", "yield"
 	};
+
+	bool nameChr(int c)
+	{
+		if (c < 0) return false;
+		return c == '_' || isAlphaNumeric((char)c);
+	}
+	bool methodEndChr(int c)
+	{
+		return nameChr(c) || c == '?' || c == '!';
+	}
+	bool methodDefEndChr(int c)
+	{
+		return methodEndChr(c) || c == '=';
+	}
+	unsigned nameLen(StyleStream &stream)
+	{
+		unsigned n = 0;
+		while (nameChr(stream.peek(n))) ++n;
+		return n;
+	}
 }
 void Ruby::style(StyleStream &stream)
 {
 	while (!stream.eof())
 	{
 		styleLine(stream);
-		stream.advanceLine(DEFAULT);
 	}
 }
+
 /**Style a upto the end of the line. Used by HAML etc.*/
 void Ruby::styleLine(StyleStream &stream)
 {
 	while (true)
 	{
 		stream.advanceSpTab();
-		if (stream.eof() || stream.peek() == '\n' || stream.peek() == '\r') break;
-		token(stream);
+		char c = stream.peek();
+		if (c < 0) return;
+		else if (c == '\r' || c == '\n')
+		{
+			stream.advanceEol();
+			return;
+		}
+		else if (c == '#')
+		{
+			stream.advanceLine(COMMENT);
+		}
+		else token(stream);
 	}
 }
 
 void Ruby::string(StyleStream &stream)
 {
-	char delim = stream.peek();
-	assert(delim == '"' || delim == '\'');
-	stream.advance(STRING);
-
-	bool escape = false;
-	while (!stream.eof())
+	switch (stream.peek())
 	{
+	case '"':
+		stream.advance(STRING);
+		return stringBody(stream, '"', '"', STRING, true);
+	case '\'':
+		stream.advance(CHARACTER);
+		return stringBody(stream, '\'', '\'', CHARACTER, false);
+	case '/':
+		stream.advance(REGEX);
+		return stringBody(stream, '/', '/', REGEX, true);
+	default:
+		assert(false);
+		stream.advance(ERROR);
+		return;
+	}
+}
+void Ruby::stringBody(StyleStream &stream,
+	char delimL, char delimR,
+	Style style, bool interpolated)
+{
+	int depth = 1;
+	bool escape = false;
+	while (depth)
+	{
+		bool thisEscape = escape;
+		escape = false;
 		char c = stream.peek();
-		if (!escape && c == delim)
+		if (c < 0) break;
+		else if (!thisEscape && c == delimR)
 		{
-			stream.advance(STRING);
-			return;
+			stream.advance(style);
+			--depth;
 		}
-		switch (c)
+		else if (!thisEscape && c == delimL)
 		{
-		case '\r':
-		case '\n':
-			escape = false;
+			stream.advance(style);
+			++depth;
+		}
+		else if (!thisEscape && interpolated && c == '#' && stream.peek(1) == '{')
+		{
+			stringInterp(stream);
+		}
+		else if (c == '\r' || c == '\n')
+		{
 			stream.advanceEol();
-			break;
-		case '\\':
-			escape = true;
-			stream.advance(STRING);
-			break;
-		case '#':
-			if (escape || delim != '"' || stream.peek(1) != '{')
-			{
-				stream.advance(STRING);
-			}
-			else stringInterp(stream);
-			escape = false;
-			break;
-		default:
-			escape = false;
-			stream.advance(STRING);
+		}
+		else if (c == '\\')
+		{
+			escape = !thisEscape;
+			stream.advance(style);
+		}
+		else stream.advance(style);
+	}
+}
+
+void Ruby::regex(StyleStream &stream)
+{
+	assert(stream.peek() == '/');
+	string(stream);
+	regexModifiers(stream);
+}
+void Ruby::regexModifiers(StyleStream &stream)
+{
+	while (true)
+	{
+		auto c = stream.peek();
+		if (c == 'i' || c == 'm' || c == 'x' || c == 'o')
+		{
+			stream.advance(REGEX);
+		}
+		else if (c >= 0 && isAlphaNumeric((char)c))
+		{
+			stream.advance(ERROR);
 			break;
 		}
+		else break;
 	}
 }
 
@@ -133,12 +203,13 @@ void Ruby::stringInterp(StyleStream &stream)
 		char c = stream.peek();
 		switch (c)
 		{
-		case '\r':
-		case '\n':
-			return;
 		case '}':
 			stream.advance(OPERATOR);
 			return;
+		case '\r':
+		case '\n':
+			stream.advanceEol();
+			break;
 		default:
 			token(stream);
 		}
@@ -154,10 +225,18 @@ void Ruby::token(StyleStream &stream)
 	case '.': case ',': case '?':
 	case '=': case '<': case '>':
 	case '&': case '|': case '^': case '~':
-	case '*': case '/': case '%': case '+': case '-':
+	case '*': case '+': case '-':
 	case '(': case ')': case '[': case ']': case '{': case '}':
 		stream.advance(OPERATOR);
 		break;
+	case '$':
+	{
+		stream.advance(GLOBAL);
+		auto n = nameLen(stream);
+		if (n == 0) stream.advance(GLOBAL);
+		else stream.advance(GLOBAL, n);
+		break;
+	}
 	case ':':
 	{
 		auto c2 = stream.peek(1);
@@ -170,9 +249,94 @@ void Ruby::token(StyleStream &stream)
 		}
 		break;
 	}
+	case '%':
+	{
+		Style strStyle = STRING;
+		bool interpolated = true;
+		int c1 = stream.peek(1);
+		unsigned n = 2;
+		if (c1 < 0)
+		{
+			stream.advance(OPERATOR);
+			break;
+		}
+		int delimL = c1;
+
+		switch ((char)c1)
+		{
+		case 'r':
+			strStyle = REGEX;
+			interpolated = true;
+			delimL = stream.peek(2);
+			++n;
+			break;
+		case 'x':
+			strStyle = BACKTICKS;
+			interpolated = true;
+			delimL = stream.peek(2);
+			++n;
+			break;
+		case 'Q':
+		case 'I':
+		case 'W':
+			strStyle = STRING;
+			interpolated = true;
+			delimL = stream.peek(2);
+			++n;
+			break;
+		case 'q':
+		case 'i':
+		case 'w':
+		case 's':
+			strStyle = CHARACTER;
+			interpolated = false;
+			delimL = stream.peek(2);
+			++n;
+			break;
+		}
+		if (delimL < 0)
+		{
+			stream.advance(OPERATOR);
+			break;
+		}
+
+		char delimR;
+		switch (delimL)
+		{
+		case '(': delimR = ')'; break;
+		case '[': delimR = ']'; break;
+		case '{': delimR = '}'; break;
+		case '<': delimR = '>'; break;
+		default: delimR = delimL; break;
+		}
+
+		stream.advance(strStyle, n);
+		stringBody(stream, (char)delimL, delimR, strStyle, interpolated);
+		if (strStyle == REGEX) regexModifiers(stream);
+		break;
+	}
 	case '@':
-		stream.advance(ATTRIBUTE);
-		name(stream, ATTRIBUTE);
+		if (stream.peek(1) == '@')
+		{
+			stream.advance(CLASS_VAR, 2);
+			name(stream, CLASS_VAR);
+		}
+		else
+		{
+			stream.advance(INSTANCE_VAR, 1);
+			name(stream, INSTANCE_VAR);
+		}
+		break;
+	case '/':
+	{
+		auto c2 = stream.peek(1);
+		if (c2 > 0 && c2 != ' ' && c2 != '\t' && c2 != '\r' && c2 != '\n') regex(stream);
+		else stream.advance(OPERATOR);
+		break;
+	}
+	case '`':
+		stream.advance(BACKTICKS);
+		stringBody(stream, '`', '`', BACKTICKS, true);
 		break;
 	case '\'': case '"':
 		string(stream);
@@ -188,7 +352,11 @@ void Ruby::token(StyleStream &stream)
 			while (true)
 			{
 				auto c2 = stream.peek((unsigned)word.size());
-				if (c2 < 0 || !(c2 == '_' || c == '?' || c == '!' || isAlphaNumeric((char)c2))) break;
+				if (!nameChr(c2))
+				{
+					if (methodEndChr(c2)) word.push_back((char)c2);
+					break;
+				}
 				else word.push_back((char)c2);
 			}
 			if (word.empty())
@@ -198,6 +366,21 @@ void Ruby::token(StyleStream &stream)
 			else if (INSTRUCTIONS.count(word))
 			{
 				stream.advance(INSTRUCTION, (unsigned)word.size());
+				if (word == "class")
+				{
+					stream.advanceSpTab();
+					name(stream, CLASS_DEF);
+				}
+				else if (word == "def")
+				{
+					stream.advanceSpTab();
+					name(stream, METHOD_DEF, true);
+				}
+				else if (word == "module")
+				{
+					stream.advanceSpTab();
+					name(stream, MODULE_DEF);
+				}
 			}
 			else stream.advance(DEFAULT, (unsigned)word.size());
 		}
@@ -212,10 +395,11 @@ void Ruby::name(StyleStream &stream, Style style, bool method)
 	{
 		c = stream.peek();
 		if (c < 0) break;
-		else if (c == '_' || isAlphaNumeric((char)c)) stream.advance(style);
+		else if (nameChr(c)) stream.advance(style);
 		else break;
 	}
 	if (method && (c == '!' || c == '?')) stream.advance(style);
+	else if (style == METHOD_DEF && c == '=') stream.advance(METHOD_DEF);
 }
 
 unsigned Ruby::findNextInterp(StyleStream &stream)
