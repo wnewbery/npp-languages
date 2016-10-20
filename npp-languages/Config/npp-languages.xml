@@ -25,12 +25,24 @@
 			<WordsStyle name="FILTER"             styleID="8"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="UNKNOWNFILTER"      styleID="9"  fgColor="808080" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 
-			<WordsStyle name="RUBYOPERATOR"       styleID="81" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSTRING"         styleID="83" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYPOD"            styleID="80" fgColor="004000" bgColor="C0FFC0" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYNUMBER"         styleID="81" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYINSTRUCTION"    styleID="82" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSYMBOL"         styleID="91" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYATTRIBUTE"      styleID="93" fgColor="0094FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYNUMBER"         styleID="81" fgColor="FF6A00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYSTRING"         styleID="83" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCHARACTER"      styleID="84" fgColor="808000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCLASS NAME"     styleID="85" fgColor="0080C0" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYDEF NAME"       styleID="86" fgColor="8080FF" bgColor="FFFFCC" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYOPERATOR"       styleID="87" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYIDENTIFIER"     styleID="88" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYREGEX"          styleID="89" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYGLOBAL"         styleID="90" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYSYMBOL"         styleID="91" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYMODULE NAME"    styleID="92" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYINSTANCE VAR"   styleID="93" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCLASS VAR"      styleID="94" fgColor="7F0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYBACKTICKS"      styleID="95" fgColor="FFFF00" bgColor="A08080" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYDATA SECTION"   styleID="96" fgColor="600000" bgColor="FFF0D8" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYSTRING Q"       styleID="97" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 
 			<WordsStyle name="HTMLDOCTYPE"        styleID="60" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="HTMLTAG"            styleID="61" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
@@ -72,12 +84,24 @@
 			<WordsStyle name="FILTER"             styleID="5"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="INCLUDE"            styleID="6"  fgColor="4800FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 
-			<WordsStyle name="RUBYOPERATOR"       styleID="81" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSTRING"         styleID="83" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYPOD"            styleID="80" fgColor="004000" bgColor="C0FFC0" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYNUMBER"         styleID="81" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYINSTRUCTION"    styleID="82" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="RUBYSYMBOL"         styleID="91" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYATTRIBUTE"      styleID="93" fgColor="0094FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="RUBYNUMBER"         styleID="81" fgColor="FF6A00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYSTRING"         styleID="83" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCHARACTER"      styleID="84" fgColor="808000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCLASS NAME"     styleID="85" fgColor="0080C0" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYDEF NAME"       styleID="86" fgColor="8080FF" bgColor="FFFFCC" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYOPERATOR"       styleID="87" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYIDENTIFIER"     styleID="88" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYREGEX"          styleID="89" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYGLOBAL"         styleID="90" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYSYMBOL"         styleID="91" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYMODULE NAME"    styleID="92" fgColor="804000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="RUBYINSTANCE VAR"   styleID="93" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYCLASS VAR"      styleID="94" fgColor="7F0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYBACKTICKS"      styleID="95" fgColor="FFFF00" bgColor="A08080" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYDATA SECTION"   styleID="96" fgColor="600000" bgColor="FFF0D8" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="RUBYSTRING Q"       styleID="97" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 
 			<WordsStyle name="HTMLDOCTYPE"        styleID="60" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="HTMLTAG"            styleID="61" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
