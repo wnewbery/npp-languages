@@ -27,6 +27,7 @@
 #include "BaseLexer.h"
 #include "lexers/Haml.h"
 #include "lexers/Markdown.h"
+#include "lexers/Slim.h"
 
 namespace
 {
@@ -52,7 +53,8 @@ namespace
 	static const auto NPP_CMD_MENU_CNT = sizeof(NPP_CMD_MENU) / sizeof(NPP_CMD_MENU[0]);
 	static const LexerInfo LEXERS[] = {
 		{"Haml", L"Haml", lexerFactory<Haml>},
-		{"Markdown", L"Markdown", lexerFactory<Markdown>}
+		{"Markdown", L"Markdown", lexerFactory<Markdown>},
+		{"Slim", L"Slim", lexerFactory<Slim>}
 	};
 	static const auto LEXER_CNT = sizeof(LEXERS) / sizeof(LEXERS[0]);
 

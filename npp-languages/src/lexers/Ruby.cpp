@@ -33,7 +33,11 @@ namespace
 }
 void Ruby::style(StyleStream &stream)
 {
-	assert(false);
+	while (!stream.eof())
+	{
+		styleLine(stream);
+		stream.advanceLine(DEFAULT);
+	}
 }
 /**Style a upto the end of the line. Used by HAML etc.*/
 void Ruby::styleLine(StyleStream &stream)
@@ -56,7 +60,7 @@ void Ruby::string(StyleStream &stream)
 	while (!stream.eof())
 	{
 		char c = stream.peek();
-		if (c == delim)
+		if (!escape && c == delim)
 		{
 			stream.advance(STRING);
 			return;
@@ -65,7 +69,9 @@ void Ruby::string(StyleStream &stream)
 		{
 		case '\r':
 		case '\n':
-			return;
+			escape = false;
+			stream.advanceEol();
+			break;
 		case '\\':
 			escape = true;
 			stream.advance(STRING);
@@ -74,9 +80,9 @@ void Ruby::string(StyleStream &stream)
 			if (escape || delim != '"' || stream.peek(1) != '{')
 			{
 				stream.advance(STRING);
-				escape = false;
 			}
 			else stringInterp(stream);
+			escape = false;
 			break;
 		default:
 			escape = false;

@@ -28,6 +28,17 @@ void advanceXmlName(StyleStream &stream, char style)
 		stream.advance(style);
 	}
 }
+unsigned xmlNameLen(StyleStream &stream)
+{
+	unsigned n = 0;
+	while (true)
+	{
+		auto c = stream.peek(n);
+		if (c < 0) return n;
+		if (c < 128 && c != '-' && c != '_' && !isAlphaNumeric((char)c)) return n;
+		++n;
+	}
+}
 
 void Html::line(StyleStream &stream)
 {

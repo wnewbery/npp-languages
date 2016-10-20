@@ -24,6 +24,7 @@
 
 /**Ends on the first ASCII value that is not '-', '_', a letter or a number.*/
 void advanceXmlName(StyleStream &stream, char style);
+unsigned xmlNameLen(StyleStream &stream);
 /**Lexer for HTML*/
 class Html : public BaseLexer
 {

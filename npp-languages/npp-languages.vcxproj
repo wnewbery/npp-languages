@@ -23,6 +23,7 @@
     <ClCompile Include="src\lexers\Html.cpp" />
     <ClCompile Include="src\lexers\Markdown.cpp" />
     <ClCompile Include="src\lexers\Ruby.cpp" />
+    <ClCompile Include="src\lexers\Slim.cpp" />
     <ClCompile Include="src\PluginMain.cpp" />
     <ClCompile Include="src\StyleStream.cpp" />
   </ItemGroup>
@@ -32,6 +33,7 @@
     <ClInclude Include="src\lexers\Html.h" />
     <ClInclude Include="src\lexers\Markdown.h" />
     <ClInclude Include="src\lexers\Ruby.h" />
+    <ClInclude Include="src\lexers\Slim.h" />
     <ClInclude Include="src\StyleStream.h" />
   </ItemGroup>
   <ItemGroup>

@@ -100,6 +100,24 @@ public:
 		}
 		return _sections[section]._src[pos];
 	}
+	std::string peekStr(unsigned len)const
+	{
+		std::string ret;
+		ret.reserve(len);
+		for (unsigned i = 0; i < len; ++i)
+		{
+			auto c = peek(i);
+			assert(c >= 0);
+			ret.push_back((char)c);
+		}
+		return ret;
+	}
+	int last()const
+	{
+		if (_sections.empty() || _sections.back()._len == 0) return -1;
+		auto &sec = _sections.back();
+		return sec._src[sec._len - 1];
+	}
 
 	//src lookaheads
 	bool matches(char c, unsigned n)const
@@ -249,7 +267,6 @@ public:
 	/**Style ' ' and '\t'*/
 	void advanceSpTab(char style = 0)
 	{
-		assert(!eof());
 		while (true)
 		{
 			switch (peek())
@@ -278,6 +295,36 @@ public:
 			else break;
 		}
 		return n;
+	}
+	/**Style ' ', '\t' and blank lines, and return the next indent count.*/
+	unsigned advanceNextIndent(char style = 0)
+	{
+		if (eof()) return 0;
+
+		//assert(_srcPos == 0 || _src[_srcPos - 1] == '\r' || _src[_srcPos - 1] == '\n');
+		//skip blank lines using default style, they are not significant
+		//return indent of first non blank line
+		unsigned indent = 0;
+		while (true)
+		{
+			char c = peek();
+			if (c == '\n')
+			{
+				advanceEol();
+				indent = 0;
+			}
+			else if (c == '\r')
+			{
+				advanceEol();
+				indent = 0;
+			}
+			else if (c == ' ' || c == '\t')
+			{
+				advance(0);
+				++indent;
+			}
+			else return indent;
+		}
 	}
 	//fold current line
 	void foldLevel(int level) {}
