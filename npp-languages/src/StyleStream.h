@@ -98,7 +98,7 @@ public:
 			++i;
 			++pos;
 		}
-		return _sections[section]._src[pos];
+		return (unsigned char)_sections[section]._src[pos];
 	}
 	std::string peekStr(unsigned len)const
 	{
@@ -138,7 +138,7 @@ public:
 	{
 		if (_sections.empty() || _sections.back()._len == 0) return -1;
 		auto &sec = _sections.back();
-		return sec._src[sec._len - 1];
+		return (unsigned char)sec._src[sec._len - 1];
 	}
 
 	//src lookaheads

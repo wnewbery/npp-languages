@@ -100,7 +100,7 @@ void Scss::globalLine(StyleStream &stream)
 	while (true)
 	{
 		stream.advanceSpTab();
-		char c = stream.peek();
+		auto c = stream.peek();
 		if (c < 0) return;
 		else if (c == '\r' || c == '\n')
 		{
