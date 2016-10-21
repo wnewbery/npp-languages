@@ -25,13 +25,7 @@ DocumentStyleStream::DocumentStyleStream(IDocument *doc)
 	std::unique_ptr<char[]> styles(new char[len]);
 	doc->GetCharRange(src.get(), 0, (int)len);
 
-	Section sec;
-	sec._len = len;
-	sec._line = 0;
-	sec._src = src.get();
-	sec._styles = styles.get();
-
-	_sections.push_back(sec);
+	addSection(src.get(), styles.get(), len, 0);
 	src.release();
 	styles.release();
 }

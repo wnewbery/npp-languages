@@ -27,53 +27,13 @@ inline bool isAlphaNumeric(int c)
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-/**Interface for lexer to read source text and write styles.
- * Able to store a number of sections that are transparent to the streams operation.
+/**Provides the basic access to style a document as a series of segments.
+ * Contains the low level access methods.
  */
-class StyleStream
+class BaseSegmentedStream
 {
 public:
-	enum SingleLineTag { singleLineTag };
-
-	StyleStream() : _sections(), _section(0), _pos(0), _line(0) {}
-	StyleStream(StyleStream &stream, SingleLineTag)
-		: StyleStream()
-	{
-		addLine(stream);
-	}
-	StyleStream(char *src, char *styles, unsigned len)
-		: StyleStream()
-	{
-		Section sec = {src, styles, len};
-		_sections.push_back(sec);
-	}
-
-	void addLine(StyleStream &stream)
-	{
-		addSection(stream, stream.lineLen());
-		stream.advanceLine(0);
-	}
-	void addLineWithEol(StyleStream &stream)
-	{
-		addSection(stream, stream.fullLineLen());
-	}
-	void addSection(StyleStream &stream, unsigned len)
-	{
-		while (len > 0)
-		{
-			assert(!stream.eof());
-			const auto &sec = stream._sections[stream._section];
-			Section newSec = {sec._src + stream._pos, sec._styles + stream._pos, stream._line};
-			unsigned remaining = sec._len - stream._pos;
-			if (len <= remaining) newSec._len = len;
-			else newSec._len = remaining;
-
-			assert(newSec._len > 0 && newSec._len <= len);
-			_sections.push_back(newSec);
-			stream.skip(newSec._len);
-			len -= newSec._len;
-		}
-	}
+	BaseSegmentedStream() : _sections(), _section(0), _pos(0), _line(0) {}
 
 	bool eof()const
 	{
@@ -100,6 +60,166 @@ public:
 		}
 		return (unsigned char)_sections[section]._src[pos];
 	}
+	int last()const
+	{
+		if (_sections.empty() || _sections.back()._len == 0) return -1;
+		auto &sec = _sections.back();
+		return (unsigned char)sec._src[sec._len - 1];
+	}
+	/**Style EOL and update line number.*/
+	void advanceEol(char style = 0)
+	{
+		assert(!eof());
+		auto c = peek();
+		if (c == '\n')
+		{
+			_sections[_section]._styles[_pos] = style;
+			++_line;
+			nextSection();
+		}
+		else
+		{
+			assert(c == '\r');
+			++_line;
+			_sections[_section]._styles[_pos] = style;
+			++_pos;
+			nextSection();
+			if (peek() == '\n')
+			{
+				_sections[_section]._styles[_pos] = style;
+				++_pos;
+				nextSection();
+			}
+			return;
+		}
+	}
+	unsigned eolLen(unsigned start = 0)const
+	{
+		auto c = peek(start);
+		if (c < 0) return 0; //end of document section
+		if (c == '\n') return 1; //\n
+		assert(c == '\r');
+		if (peek(start + 1) == '\n') return 2; //\r\n
+		return 1; //\r
+	}
+	/**Style next n elements.*/
+	void advance(char style, size_t n = 1)
+	{
+		for (size_t i = 0; i < n; ++i)
+		{
+			assert(!eof());
+			assert(peek() != '\r' && peek() != '\n');
+			_sections[_section]._styles[_pos] = (char)style;
+			++_pos;
+			nextSection();
+		}
+	}
+
+protected:
+	void addSection(StyleStream &stream, unsigned len)
+	{
+		while (len > 0)
+		{
+			assert(!stream.eof());
+			const auto &sec = stream._sections[stream._section];
+			Section newSec = {sec._src + stream._pos, sec._styles + stream._pos, stream._line};
+			unsigned remaining = sec._len - stream._pos;
+			if (len <= remaining) newSec._len = len;
+			else newSec._len = remaining;
+
+			assert(newSec._len > 0 && newSec._len <= len);
+			_sections.push_back(newSec);
+			stream.skip(newSec._len);
+			len -= newSec._len;
+		}
+	}
+	void addSection(const char *src, char *styles, unsigned len, unsigned line)
+	{
+		if (len > 0)
+		{
+			Section newSec = {src, styles, len, line};
+			_sections.push_back(newSec);
+		}
+	}
+private:
+	//TODO: For ~DocumentStyleStream
+	friend class DocumentStyleStream;
+
+	struct Section
+	{
+		const char *_src;
+		char *_styles;
+		unsigned _len;
+		/**First line number.*/
+		unsigned _line;
+	};
+	std::vector<Section> _sections;
+	/**Current position in _sections.*/
+	unsigned _section;
+	/**Current position in _sections[_section] _src and _styles.*/
+	unsigned _pos;
+	/**Current document line number.*/
+	unsigned _line;
+	IDocument *_doc;
+	/**Moves to next _section if _pos reached the end.*/
+	void nextSection()
+	{
+		assert(!eof());
+		if (_pos == _sections[_section]._len)
+		{
+			++_section;
+			_pos = 0;
+			if (!eof()) _line = _sections[_section]._line;
+		}
+	}
+	/**Advance without styling. Used when creating sub streams for other languages.*/
+	void skip(unsigned n = 1)
+	{
+		for (unsigned i = 0; i < n;)
+		{
+			assert(!eof());
+			char c = peek();
+			if (c == '\r' || c == '\n')
+			{
+				i += eolLen();
+				assert(i <= n);
+				advanceEol(); //TODO: this will set styles, which is wasted effort
+			}
+			else
+			{
+				++_pos;
+				++i;
+				nextSection();
+			}
+		}
+	}
+};
+
+/**Interface for lexer to read source text and write styles.
+ * Able to store a number of sections that are transparent to the streams operation.
+ */
+class StyleStream : public BaseSegmentedStream
+{
+public:
+	enum SingleLineTag { singleLineTag };
+
+	StyleStream() : BaseSegmentedStream() {}
+	StyleStream(StyleStream &stream, SingleLineTag)
+		: StyleStream()
+	{
+		addLine(stream);
+	}
+
+	void addLine(StyleStream &stream)
+	{
+		addSection(stream, stream.lineLen());
+		stream.advanceLine(0);
+	}
+	void addLineWithEol(StyleStream &stream)
+	{
+		addSection(stream, stream.fullLineLen());
+	}
+
 	std::string peekStr(unsigned len)const
 	{
 		std::string ret;
@@ -134,12 +254,7 @@ public:
 			else return c;
 		}
 	}
-	int last()const
-	{
-		if (_sections.empty() || _sections.back()._len == 0) return -1;
-		auto &sec = _sections.back();
-		return (unsigned char)sec._src[sec._len - 1];
-	}
+
 
 	//src lookaheads
 	bool matches(char c, unsigned n)const
@@ -214,33 +329,12 @@ public:
 		}
 		return p - start;
 	}
-	unsigned eolLen(unsigned start = 0)const
-	{
-		auto c = peek(start);
-		if (c < 0) return 0; //end of document section
-		if (c == '\n') return 1; //\n
-		assert(c == '\r');
-		if (peek(start + 1) == '\n') return 2; //\r\n
-		return 1; //\r
-	}
 	unsigned fullLineLen(unsigned start = 0)const
 	{
 		unsigned n = lineLen(start);
 		return n + eolLen(start + n);
 	}
 	//style
-	/**Style next n elements.*/
-	void advance(char style, size_t n = 1)
-	{
-		for (size_t i = 0; i < n; ++i)
-		{
-			assert(!eof());
-			assert(peek() != '\r' && peek() != '\n');
-			_sections[_section]._styles[_pos] = (char)style;
-			++_pos;
-			nextSection();
-		}
-	}
 	/**Style rest of line.*/
 	void advanceLine(char style, char eolStyle = 0)
 	{
@@ -268,33 +362,6 @@ public:
 				advance(style);
 				++i;
 			}
-		}
-	}
-	/**Style EOL and update line number.*/
-	void advanceEol(char style = 0)
-	{
-		assert(!eof());
-		auto c = peek();
-		if (c == '\n')
-		{
-			_sections[_section]._styles[_pos] = style;
-			++_line;
-			nextSection();
-		}
-		else
-		{
-			assert(c == '\r');
-			++_line;
-			_sections[_section]._styles[_pos] = style;
-			++_pos;
-			nextSection();
-			if (peek() == '\n')
-			{
-				_sections[_section]._styles[_pos] = style;
-				++_pos;
-				nextSection();
-			}
-			return;
 		}
 	}
 	/**Style ' ' and '\t'*/
@@ -372,55 +439,6 @@ public:
 	//fold current line
 	void foldLevel(int level) {}
 protected:
-	struct Section
-	{
-		char *_src;
-		char *_styles;
-		unsigned _len;
-		/**First line number.*/
-		unsigned _line;
-	};
-	std::vector<Section> _sections;
-	/**Current position in _sections.*/
-	unsigned _section;
-	/**Current position in _sections[_section] _src and _styles.*/
-	unsigned _pos;
-	/**Current document line number.*/
-	unsigned _line;
-	IDocument *_doc;
-
-	/**Moves to next _section if _pos reached the end.*/
-	void nextSection()
-	{
-		assert(!eof());
-		if (_pos == _sections[_section]._len)
-		{
-			++_section;
-			_pos = 0;
-			if (!eof()) _line = _sections[_section]._line;
-		}
-	}
-	/**Advance without styling. Used when creating sub streams for other languages.*/
-	void skip(unsigned n = 1)
-	{
-		for (unsigned i = 0; i < n;)
-		{
-			assert(!eof());
-			char c = peek();
-			if (c == '\r' || c == '\n')
-			{
-				i += eolLen();
-				assert(i <= n);
-				advanceEol(); //TODO: this will set styles, which is wasted effort
-			}
-			else
-			{
-				++_pos;
-				++i;
-				nextSection();
-			}
-		}
-	}
 };
 
 /**Interface for IDocument to read source text and write styles.*/
