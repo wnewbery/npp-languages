@@ -28,6 +28,7 @@
 #include "lexers/Haml.h"
 #include "lexers/Markdown.h"
 #include "lexers/Ruby.h"
+#include "lexers/Scss.h"
 #include "lexers/Slim.h"
 
 namespace
@@ -56,6 +57,7 @@ namespace
 		{"Haml", L"Haml", lexerFactory<Haml>},
 		{"Markdown", L"Markdown", lexerFactory<Markdown>},
 		{"Ruby", L"Ruby", lexerFactory<Ruby>},
+		{"Scss", L"Scss", lexerFactory<Scss>},
 		{"Slim", L"Slim", lexerFactory<Slim>}
 	};
 	static const auto LEXER_CNT = sizeof(LEXERS) / sizeof(LEXERS[0]);

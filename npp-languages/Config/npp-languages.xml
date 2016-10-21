@@ -9,6 +9,8 @@
 		</Language>
 		<Language name="Ruby" ext="rb" commentLine="/">
 		</Language>
+		<Language name="Scss" ext="scss" commentLine="/">
+		</Language>
 		<Language name="Slim" ext="slim" commentLine="/">
 		</Language>
 	</Languages>
@@ -84,6 +86,25 @@
 			<WordsStyle name="FILTER"             styleID="5"  fgColor="FF0000" bgColor="FDF8E3" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="INCLUDE"            styleID="6"  fgColor="4800FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 
+			<WordsStyle name="MDBOLD"             styleID="31" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="MDITALIC"           styleID="32" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="2" fontSize="" />
+			<WordsStyle name="MDCODE"             styleID="33" fgColor="000000" bgColor="DDDDDD" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="MDIMAGE"            styleID="36" fgColor="00137F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="MDLINK"             styleID="38" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="MDBLOCKQUOTE"       styleID="39" fgColor="000000" bgColor="CCCCCC" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="MDLIST"             styleID="40" fgColor="00C9FF" bgColor="EEEEEE" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="MDTHEMATICBREAK"    styleID="41" fgColor="000000" bgColor="3F7F7F" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="MDSTRIKETHROUGH"    styleID="42" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="4" fontSize="" />
+			<WordsStyle name="HMDARDNEWLINE"      styleID="43" fgColor="000000" bgColor="FF6A00" fontName="" fontStyle="0" fontSize="" />
+
+			<WordsStyle name="HTMLDOCTYPE"        styleID="60" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLTAG"            styleID="61" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLCOMMENT"        styleID="62" fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTE"      styleID="63" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTEVALUE" styleID="64" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLATTRIBUTEEQ"    styleID="65" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="HTMLENTITY"         styleID="66" fgColor="000000" bgColor="FEFDE0" fontName="" fontStyle="2" fontSize="" />
+
 			<WordsStyle name="RUBYPOD"            styleID="80" fgColor="004000" bgColor="C0FFC0" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYNUMBER"         styleID="81" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYINSTRUCTION"    styleID="82" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
@@ -102,17 +123,8 @@
 			<WordsStyle name="RUBYBACKTICKS"      styleID="95" fgColor="FFFF00" bgColor="A08080" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYDATA SECTION"   styleID="96" fgColor="600000" bgColor="FFF0D8" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="RUBYSTRING Q"       styleID="97" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-
-			<WordsStyle name="HTMLDOCTYPE"        styleID="60" fgColor="000000" bgColor="A6CAF0" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="HTMLTAG"            styleID="61" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="HTMLCOMMENT"        styleID="62" fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="HTMLATTRIBUTE"      styleID="63" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
-			<WordsStyle name="HTMLATTRIBUTEVALUE" styleID="64" fgColor="8000FF" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="HTMLATTRIBUTEEQ"    styleID="65" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
-			<WordsStyle name="HTMLENTITY"         styleID="66" fgColor="000000" bgColor="FEFDE0" fontName="" fontStyle="2" fontSize="" />
 		</LexerType>
 
-		<!--Embeddable languages-->
 		<LexerType name="Markdown" desc="Markdown" ext="">
 			<WordsStyle name="DEFAULT"            styleID="0"  fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
 			<WordsStyle name="ERROR"              styleID="1"  fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
@@ -131,6 +143,23 @@
 			<WordsStyle name="THEMATICBREAK"      styleID="41" fgColor="000000" bgColor="3F7F7F" fontName="" fontStyle="1" fontSize="" />
 			<WordsStyle name="STRIKETHROUGH"      styleID="42" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="4" fontSize="" />
 			<WordsStyle name="HARDNEWLINE"        styleID="43" fgColor="000000" bgColor="FF6A00" fontName="" fontStyle="0" fontSize="" />
+		</LexerType>
+		<LexerType name="Scss" desc="Scss" ext="">
+			<WordsStyle name="DEFAULT"            styleID="0"   fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ERROR"              styleID="1"   fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="TAG"                styleID="100" fgColor="0000FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="CLASS"              styleID="101" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="ID"                 styleID="102" fgColor="0080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="VARIABLE"           styleID="103" fgColor="004A7F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="NUMBER"             styleID="104" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="STRING"             styleID="105" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="OPERATOR"           styleID="106" fgColor="000080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="FUNCTION"           styleID="107" fgColor="8080FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="IMPORTANT"          styleID="108" fgColor="FF0000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+			<WordsStyle name="CSS_COMMENT"        styleID="109" fgColor="008000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="SCSS_COMMENT"       styleID="110" fgColor="008080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="COLOR"              styleID="111" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+			<WordsStyle name="PSEUDO"             styleID="112" fgColor="FF8000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
 		</LexerType>
 	</LexerStyles>
 </NotepadPlus>

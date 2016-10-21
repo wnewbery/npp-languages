@@ -22,6 +22,9 @@
     <ClCompile Include="src\lexers\Slim.cpp">
       <Filter>source\lexers</Filter>
     </ClCompile>
+    <ClCompile Include="src\lexers\Scss.cpp">
+      <Filter>source\lexers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lexers\Haml.h">
@@ -43,6 +46,9 @@
       <Filter>source\lexers</Filter>
     </ClInclude>
     <ClInclude Include="src\lexers\Slim.h">
+      <Filter>source\lexers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lexers\Scss.h">
       <Filter>source\lexers</Filter>
     </ClInclude>
   </ItemGroup>

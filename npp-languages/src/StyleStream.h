@@ -22,7 +22,7 @@
 #include <vector>
 class IDocument; //Scintilla
 
-inline bool isAlphaNumeric(char c)
+inline bool isAlphaNumeric(int c)
 {
 	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
@@ -112,6 +112,28 @@ public:
 		}
 		return ret;
 	}
+	template<typename F>
+	std::string peekStr(F f, unsigned start = 0)const
+	{
+		std::string ret;
+		unsigned p = 0;
+		while (true)
+		{
+			auto c = peek(p + start);
+			if (c < 0 || !f((char)c)) return ret;
+			ret.push_back((char)c);
+			++p;
+		}
+	}
+	int peekAfterSpTab(unsigned start)
+	{
+		while (true)
+		{
+			auto c = peek(start);
+			if (c == ' ' || c == '\t') ++start;
+			else return c;
+		}
+	}
 	int last()const
 	{
 		if (_sections.empty() || _sections.back()._len == 0) return -1;
@@ -128,11 +150,11 @@ public:
 		}
 		return true;
 	}
-	bool matches(const char *str)const
+	bool matches(const char *str, unsigned start = 0)const
 	{
 		for (int i = 0; *str; ++str, ++i)
 		{
-			if (peek(i) != *str) return false;
+			if (peek(i + start) != *str) return false;
 		}
 		return true;
 	}
@@ -145,6 +167,17 @@ public:
 		unsigned p = 0;
 		while (peek(p + start) == c) ++p;
 		return p;
+	}
+	template<typename F>
+	unsigned countMatches(F f, unsigned start = 0)
+	{
+		unsigned p = 0;
+		while (true)
+		{
+			auto c = peek(p + start);
+			if (c < 0 || !f((char)c)) return p;
+			else ++p;
+		}
 	}
 	bool isWsAt(unsigned p)const
 	{
@@ -197,9 +230,9 @@ public:
 	}
 	//style
 	/**Style next n elements.*/
-	void advance(char style, unsigned n = 1)
+	void advance(char style, size_t n = 1)
 	{
-		for (unsigned i = 0; i < n; ++i)
+		for (size_t i = 0; i < n; ++i)
 		{
 			assert(!eof());
 			assert(peek() != '\r' && peek() != '\n');
@@ -324,6 +357,16 @@ public:
 				++indent;
 			}
 			else return indent;
+		}
+	}
+	template<typename F>
+	void advanceMatches(F f, char style)
+	{
+		while (true)
+		{
+			auto c = peek();
+			if (c < 0 || !f((char)c)) return;
+			else advance(style);
 		}
 	}
 	//fold current line
