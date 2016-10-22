@@ -17,53 +17,9 @@
 #include "Scss.h"
 #include <cassert>
 #include <string>
-#include <unordered_set>
 
 namespace
 {
-	const std::unordered_set<std::string> PSEUDO_CLASS = {
-		"link", "active", "lang", "root",
-		"nth-child", "nth-last-child", "nth-of-type", "nth-last-of-type",
-		"last-child", "first-of-type", "last-of-type", "only-child", "only-of-type",
-		"empty", "target", "enabled", "disabled", "checked", "not"
-	};
-	const std::unordered_set<std::string> PSEUDO_ELEMENT = {
-		"before", "after", "first-line", "first-letter"
-	};
-	const std::unordered_set<std::string> LENGTH = {
-		"em", "ex", "ch", "rem",
-		"vh", "vw", "vmin", "vmax",
-		"px", "mm", "q", "cm", "in", "pt", "pc"
-	};
-	const std::unordered_set<std::string> ANGLE = {
-		"deg", "grad", "rad", "turn"
-	};
-	const std::unordered_set<std::string> COLORS = {
-		"transparent", "currentColor",
-		"black", "silver", "gray", "white", "maroon", "red", "purple", "fuchsia", "green", "lime", "olive", "yellow", "navy", "blue", "teal", "aqu",
-		"orange",
-		"aliceblue", "antiquewhite", "aquamarine", "azure", "beige", "bisque", "blanchedalmond",
-		"blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral",
-		"cornflowerblue", "cornsilk", "crimson", "darkblue", "darkcyan", "darkgoldenrod", "darkgray",
-		"darkgreen", "darkgrey", "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange", "darkorchid",
-		"darkred", "darksalmon", "darkseagreen", "darkslateblue", "darkslategray", "darkslategrey",
-		"darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dimgray", "dimgrey", "dodgerblue",
-		"firebrick", "floralwhite", "forestgreen", "gainsboro", "ghostwhite", "gold", "goldenrod",
-		"greenyellow", "grey", "honeydew", "hotpink", "indianred", "indigo", "ivory", "khaki", "lavender",
-		"lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan",
-		"lightgoldenrodyellow", "lightgray", "lightgreen", "lightgrey", "lightpink", "lightsalmon",
-		"lightseagreen", "lightskyblue", "lightslategray", "lightslategrey", "lightsteelblue",
-		"lightyellow", "limegreen", "linen", "mediumaquamarine", "mediumblue", "mediumorchid",
-		"mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise",
-		"mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin", "navajowhite", "oldlace",
-		"olivedrab", "orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise", "palevioletred",
-		"papayawhip", "peachpuff", "peru", "pink", "plum", "powderblue", "rosybrown", "royalblue",
-		"saddlebrown", "salmon", "sandybrown", "seagreen", "seashell", "sienna", "skyblue", "slateblue",
-		"slategray", "slategrey", "snow", "springgreen", "steelblue", "tan", "thistle", "tomato",
-		"turquoise", "violet", "wheat", "whitesmoke", "yellowgree",
-		"rebeccapurple"
-	};
-
 	bool keywordChr(int c)
 	{
 		return c >= 'a' && c <= 'z';

@@ -114,9 +114,8 @@ public:
 			nextSection();
 		}
 	}
-
-protected:
-	void addSection(StyleStream &stream, unsigned len)
+public:
+	void addSection(BaseSegmentedStream &stream, unsigned len)
 	{
 		while (len > 0)
 		{
@@ -133,6 +132,7 @@ protected:
 			len -= newSec._len;
 		}
 	}
+protected:
 	void addSection(const char *src, char *styles, unsigned len, unsigned line)
 	{
 		if (len > 0)
