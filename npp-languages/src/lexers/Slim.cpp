@@ -29,11 +29,31 @@ namespace
 
 void Slim::style(StyleStream &stream)
 {
+	_currentIndent = stream.advanceIndent();
 	while (!stream.eof()) line(stream);
+}
+void SCI_METHOD Slim::Lex(unsigned int startPos, int lengthDoc, int initStyle, IDocument *doc)
+{
+	//return BaseLexer::Lex(startPos, lengthDoc, initStyle, doc);
+	int startLine = doc->LineFromPosition(startPos);
+	if (startLine > 0) --startLine; //if the edited lines indent changed, then its meaning may depend on the previous item
+	while (startLine > 0 && doc->GetLineState(startLine) != SAFE_START) --startLine;
+	unsigned actualStartPos = (unsigned)doc->LineStart(startLine);
+	assert(actualStartPos <= startPos);
+
+	unsigned end = startPos + lengthDoc;
+	end = doc->LineStart(doc->LineFromPosition(startPos + lengthDoc) + 1);
+
+	char last[100];
+	doc->GetCharRange(last, end - 10, 100);
+
+	DocumentStyleStream stream(doc, startLine, end - actualStartPos);
+	style(stream);
 }
 
 void Slim::line(StyleStream &stream)
 {
+	stream.lineState(SAFE_START);
 	if (stream.eof()) return;
 	switch (stream.peek())
 	{

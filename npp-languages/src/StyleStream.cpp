@@ -17,9 +17,15 @@
 #include "StyleStream.h"
 #include <ILexer.h>
 
-DocumentStyleStream::DocumentStyleStream(IDocument *doc)
-	: StyleStream(), _doc(doc)
+void BaseSegmentedStream::lineState(unsigned state)
 {
+	if (_doc) _doc->SetLineState((int)_line, (int)state);
+}
+
+DocumentStyleStream::DocumentStyleStream(IDocument *doc)
+	: StyleStream(), _startPos(0)
+{
+	_doc = doc;
 	unsigned len = (unsigned)doc->Length();
 	std::unique_ptr<char[]> src(new char[len]);
 	std::unique_ptr<char[]> styles(new char[len]);
@@ -29,11 +35,26 @@ DocumentStyleStream::DocumentStyleStream(IDocument *doc)
 	src.release();
 	styles.release();
 }
+DocumentStyleStream::DocumentStyleStream(IDocument *doc, unsigned line, unsigned len)
+	: StyleStream(), _startPos(0)
+{
+	_doc = doc;
+	_line = line;
+	_startPos = (unsigned)doc->LineStart((int)line);
+
+	std::unique_ptr<char[]> src(new char[len]);
+	std::unique_ptr<char[]> styles(new char[len]);
+	doc->GetCharRange(src.get(), (int)_startPos, (int)len);
+
+	addSection(src.get(), styles.get(), len, line);
+	src.release();
+	styles.release();
+}
 DocumentStyleStream::~DocumentStyleStream()
 {
 	assert(_sections.size() == 1);
 
-	_doc->StartStyling(0, (char)0xFF);
+	_doc->StartStyling(_startPos, (char)0xFF);
 	_doc->SetStyles((int)_sections[0]._len, _sections[0]._styles);
 
 	delete[] _sections[0]._src;

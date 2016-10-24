@@ -27,7 +27,11 @@ class Slim : public BaseLexer
 {
 public:
 	virtual void style(StyleStream &stream)override;
+	virtual void SCI_METHOD Lex(unsigned int startPos, int lengthDoc, int initStyle, IDocument *pAccess)override;
 private:
+	//line flags
+	static const int SAFE_START = 1;
+
 	enum Style
 	{
 		DEFAULT = Ruby::DEFAULT,

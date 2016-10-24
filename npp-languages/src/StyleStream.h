@@ -75,14 +75,17 @@ public:
 		{
 			_sections[_section]._styles[_pos] = style;
 			++_line;
+			++_pos;
+			lineState(0);
 			nextSection();
 		}
 		else
 		{
 			assert(c == '\r');
-			++_line;
 			_sections[_section]._styles[_pos] = style;
+			++_line;
 			++_pos;
+			lineState(0);
 			nextSection();
 			if (peek() == '\n')
 			{
@@ -114,7 +117,7 @@ public:
 			nextSection();
 		}
 	}
-public:
+
 	void addSection(BaseSegmentedStream &stream, unsigned len)
 	{
 		while (len > 0)
@@ -132,6 +135,9 @@ public:
 			len -= newSec._len;
 		}
 	}
+
+	/**Set the persistant state for the current line.*/
+	void lineState(unsigned state);
 protected:
 	void addSection(const char *src, char *styles, unsigned len, unsigned line)
 	{
@@ -169,7 +175,12 @@ private:
 		{
 			++_section;
 			_pos = 0;
-			if (!eof()) _line = _sections[_section]._line;
+			if (!eof())
+			{
+				auto oldLine = _line;
+				_line = _sections[_section]._line;
+				if (oldLine != _line) lineState(0);
+			}
 		}
 	}
 	/**Advance without styling. Used when creating sub streams for other languages.*/
@@ -446,7 +457,8 @@ class DocumentStyleStream : public StyleStream
 {
 public:
 	DocumentStyleStream(IDocument *doc);
+	DocumentStyleStream(IDocument *doc, unsigned line, unsigned len);
 	~DocumentStyleStream();
 private:
-	IDocument *_doc;
+	unsigned _startPos;
 };
