@@ -363,6 +363,10 @@ void Ruby::token(StyleStream &stream)
 			{
 				stream.advance(0);
 			}
+			else if (stream.peek((unsigned)word.size()) == ':')
+			{
+				stream.advance(SYMBOL, (unsigned)word.size() + 1);
+			}
 			else if (INSTRUCTIONS.count(word))
 			{
 				stream.advance(INSTRUCTION, (unsigned)word.size());
