@@ -118,19 +118,19 @@ extern "C" __declspec(dllexport) BOOL isUnicode()
 }
 
 // Lexer API
-extern "C" _declspec(dllexport) int GetLexerCount()
+extern "C" _declspec(dllexport) int EXT_LEXER_DECL GetLexerCount()
 {
 	return (int)LEXER_CNT;
 }
-extern "C" _declspec(dllexport) void GetLexerName(unsigned int index, char *name, int buflength)
+extern "C" _declspec(dllexport) void EXT_LEXER_DECL GetLexerName(unsigned int index, char *name, int buflength)
 {
 	strcpy_s(name, (size_t)buflength, LEXERS[index].name);
 }
-extern "C" _declspec(dllexport) LexerFactoryFunction GetLexerFactory(unsigned index)
+extern "C" _declspec(dllexport) LexerFactoryFunction EXT_LEXER_DECL GetLexerFactory(unsigned index)
 {
 	return LEXERS[index].factory;
 }
-extern "C" _declspec(dllexport) void GetLexerStatusText(unsigned int index, TCHAR *desc, int buflength)
+extern "C" _declspec(dllexport) void EXT_LEXER_DECL GetLexerStatusText(unsigned int index, TCHAR *desc, int buflength)
 {
 	wcscpy_s(desc, (size_t)buflength, LEXERS[index].desc);
 }
