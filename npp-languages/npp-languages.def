@@ -1,0 +1,13 @@
+LIBRARY
+EXPORTS
+	setInfo
+	getName
+	getFuncsArray
+	beNotified
+	messageProc
+	isUnicode
+
+	GetLexerCount
+	GetLexerName
+	GetLexerFactory
+	GetLexerStatusText

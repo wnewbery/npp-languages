@@ -41,6 +41,9 @@
   <ItemGroup>
     <Xml Include="Config\npp-languages.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="npp-languages.def" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{48125156-D6A8-4DED-8301-C614D398F6B8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -121,6 +124,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>npp-languages.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "$(ProjectDir)Config" "$(TargetDir)Config\" /s /i /y</Command>
@@ -142,6 +146,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "$(ProjectDir)Config" "$(TargetDir)Config\" /s /i /y</Command>
@@ -167,6 +173,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>npp-languages.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "$(ProjectDir)Config" "$(TargetDir)Config\" /s /i /y</Command>
@@ -192,6 +199,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>XCOPY "$(ProjectDir)Config" "$(TargetDir)Config\" /s /i /y</Command>

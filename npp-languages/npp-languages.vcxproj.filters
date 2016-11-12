@@ -63,4 +63,7 @@
   <ItemGroup>
     <Xml Include="Config\npp-languages.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="npp-languages.def" />
+  </ItemGroup>
 </Project>
