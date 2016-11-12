@@ -193,7 +193,7 @@ bool Markdown::list(StyleStream &stream)
 	{
 		stream.advance(LIST, spaces + w);
 		containerStream.addLineWithEol(stream);
-		if (stream.countSp() < w) break;
+		if (stream.countSp() < spaces + w) break;
 	}
 
 

@@ -287,7 +287,8 @@ void Scss::selector(StyleStream &stream)
 	{
 		stream.advanceSpTab();
 		auto c = stream.peek();
-		if (c == '\r' || c == '\n') stream.advanceEol();
+		if (c < 0) break;
+		else if (c == '\r' || c == '\n') stream.advanceEol();
 		else if (c == ';')
 		{
 			stream.advance(ERROR);
