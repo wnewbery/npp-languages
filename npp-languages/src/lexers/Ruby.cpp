@@ -28,7 +28,10 @@ namespace
 		"def", "defined?", "do", "else", "elsif", "end", "ensure",
 		"false", "for", "if", "in", "module", "next", "nil", "not", "or",
 		"redo", "rescue", "retry", "return", "self", "super", "then", "true",
-		"undef", "unless", "when", "while", "yield"
+		"undef", "unless", "until", "when", "while", "yield"
+	};
+	static const std::unordered_set<std::string> COND_INSTRUCTIONS = {
+		"for", "while", "until", "case", "if", "unless"
 	};
 
 	bool nameChr(int c)
@@ -62,6 +65,7 @@ void Ruby::style(StyleStream &stream)
 /**Style a upto the end of the line. Used by HAML etc.*/
 void Ruby::styleLine(StyleStream &stream)
 {
+	bool first = true;
 	while (true)
 	{
 		stream.advanceSpTab();
@@ -75,6 +79,17 @@ void Ruby::styleLine(StyleStream &stream)
 		else if (c == '#')
 		{
 			stream.advanceLine(COMMENT);
+			first = true;
+		}
+		else if (c == ';')
+		{
+			stream.advance(OPERATOR);
+			first = true;
+		}
+		else if (first)
+		{
+			statementStart(stream);
+			first = false;
 		}
 		else token(stream);
 	}
@@ -216,6 +231,21 @@ void Ruby::stringInterp(StyleStream &stream)
 	}
 }
 
+void Ruby::statementStart(StyleStream &stream)
+{
+	char c = stream.peek();
+	assert(c != '\n' && c != '\r');
+
+	auto word = peekInstruction(stream);
+	if (COND_INSTRUCTIONS.count(word))
+	{
+		stream.foldHeader(stream.foldLevel());
+		stream.increaseFoldNext();
+		stream.advance(INSTRUCTION, word.size());
+	}
+	else token(stream);
+}
+
 void Ruby::token(StyleStream &stream)
 {
 	char c = stream.peek();
@@ -348,17 +378,7 @@ void Ruby::token(StyleStream &stream)
 		}
 		else
 		{
-			std::string word;
-			while (true)
-			{
-				auto c2 = stream.peek((unsigned)word.size());
-				if (!nameChr(c2))
-				{
-					if (methodEndChr(c2)) word.push_back((char)c2);
-					break;
-				}
-				else word.push_back((char)c2);
-			}
+			auto word = peekInstruction(stream);
 			if (word.empty())
 			{
 				stream.advance(0);
@@ -374,16 +394,31 @@ void Ruby::token(StyleStream &stream)
 				{
 					stream.advanceSpTab();
 					name(stream, CLASS_DEF);
+					stream.foldHeader(stream.foldLevel());
+					stream.increaseFoldNext();
 				}
 				else if (word == "def")
 				{
 					stream.advanceSpTab();
 					name(stream, METHOD_DEF, true);
+					stream.foldHeader(stream.foldLevel());
+					stream.increaseFoldNext();
 				}
 				else if (word == "module")
 				{
 					stream.advanceSpTab();
 					name(stream, MODULE_DEF);
+					stream.foldHeader(stream.foldLevel());
+					stream.increaseFoldNext();
+				}
+				else if (word == "do")
+				{
+					stream.foldHeader(stream.foldLevel());
+					stream.increaseFoldNext();
+				}
+				else if (word == "end")
+				{
+					stream.reduceFoldNext();
 				}
 			}
 			else stream.advance(DEFAULT, (unsigned)word.size());
@@ -432,4 +467,19 @@ unsigned Ruby::findNextInterp(StyleStream &stream)
 		}
 		++i;
 	}
+}
+std::string Ruby::peekInstruction(StyleStream &stream)
+{
+	std::string word;
+	while (true)
+	{
+		auto c2 = stream.peek((unsigned)word.size());
+		if (!nameChr(c2))
+		{
+			if (methodEndChr(c2)) word.push_back((char)c2);
+			break;
+		}
+		else word.push_back((char)c2);
+	}
+	return word;
 }

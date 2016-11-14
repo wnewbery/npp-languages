@@ -68,8 +68,8 @@ void Haml::style(StyleStream &stream)
 void Haml::line(StyleStream &stream)
 {
 	if (stream.eof()) return; //nothing todo
+	stream.foldIndent(_currentIndent);
 
-	stream.foldLevel(_currentIndent);
 	switch (stream.peek())
 	{
 	case '\r':
@@ -119,7 +119,6 @@ void Haml::hamlComment(StyleStream &stream)
 void Haml::comment(StyleStream &stream, Style style)
 {
 	//All lines greater than _currentIndent
-	stream.foldLevel(_currentIndent);
 	stream.advanceLine(style);
 	while (!stream.eof())
 	{
@@ -129,7 +128,7 @@ void Haml::comment(StyleStream &stream, Style style)
 			_currentIndent = indent;
 			break;
 		}
-		stream.foldLevel(_currentIndent + 1);
+		stream.foldIndent(_currentIndent + 1);
 		stream.advanceLine(style);
 	}
 }
@@ -157,7 +156,6 @@ void Haml::tagClass(StyleStream &stream)
 }
 void Haml::tagStart(StyleStream &stream)
 {
-	stream.foldLevel(_currentIndent);
 	if (stream.eof()) return;
 	switch (stream.peek())
 	{
@@ -187,7 +185,6 @@ void Haml::rubyAttrs(StyleStream &stream)
 			if (lineContinuation)
 			{
 				stream.advanceLine(DEFAULT);
-				stream.foldLevel(_currentIndent + 1);
 				break;
 			}
 			else
@@ -274,7 +271,6 @@ void Haml::htmlAttrs(StyleStream &stream)
 		case '\r':
 		case '\n':
 			stream.advanceLine(DEFAULT);
-			stream.foldLevel(_currentIndent + 1);
 			break;
 		case ')':
 			stream.advance(Ruby::OPERATOR);
@@ -302,7 +298,6 @@ void Haml::htmlAttrs(StyleStream &stream)
 void Haml::filter(StyleStream &stream)
 {
 	assert(stream.peek() == ':');
-	stream.foldLevel(_currentIndent);
 	stream.advanceLine(FILTER);
 
 	while (!stream.eof())
@@ -313,7 +308,7 @@ void Haml::filter(StyleStream &stream)
 			_currentIndent = indent;
 			break;
 		}
-		stream.foldLevel(_currentIndent + 1);
+		stream.foldIndent(_currentIndent + 1);
 		stream.advanceLine(UNKNOWNFILTER);
 	}
 }
@@ -324,7 +319,7 @@ void Haml::rubyBlock(StyleStream &stream)
 	bool first = true;
 	do
 	{
-		if (!first) stream.foldLevel(_currentIndent + 1);
+		if (!first) stream.foldIndent(_currentIndent + 1);
 		first = false;
 		auto len = stream.lineLen();
 		next = len > 0 && stream.peek(len - 1) == ',';

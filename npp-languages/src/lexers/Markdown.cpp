@@ -86,6 +86,8 @@ bool Markdown::atxHeader(StyleStream &stream)
 	unsigned cnt = stream.countChr('#', spaces);
 	if (cnt == 0 || cnt > 6) return false;
 	if (!stream.isWsAt(spaces + cnt)) return false;
+	stream.foldHeader((int)cnt - 1);
+	stream.foldNext((int)cnt);
 	stream.advance(HEADER, spaces + cnt + 1);
 	styleInline(StyleStream(stream, StyleStream::singleLineTag), HEADER);
 	return true;
@@ -97,9 +99,13 @@ bool Markdown::setextHeading(StyleStream &stream)
 	auto c = stream.peek(spaces);
 	if (c != '-' && c != '=') return false;
 
-	auto n = stream.countChr((char)c);
+	auto n = stream.countChr((char)c, spaces);
 	assert(n > 0);
 	if (!stream.isBlankLine(spaces + n)) return false;
+
+	auto hLevel = c == '=' ? 1 : 2;
+	stream.foldHeader(hLevel - 1);
+	stream.foldNext(hLevel);
 
 	stream.advanceLine(HEADER, HEADER);
 	return true;

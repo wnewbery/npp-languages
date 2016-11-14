@@ -152,6 +152,8 @@ bool Scss::basicStatement(StyleStream &stream)
 void Scss::cssComment(StyleStream &stream)
 {
 	assert(stream.matches("/*"));
+	stream.foldHeader(stream.foldLevel());
+	stream.increaseFoldNext();
 	stream.advance(CSS_COMMENT, 2);
 	while (true)
 	{
@@ -160,6 +162,7 @@ void Scss::cssComment(StyleStream &stream)
 		else if (c == '\r' || c == '\n') stream.advanceEol();
 		else if (c == '*' && stream.peek(1) == '/')
 		{
+			stream.reduceFoldNext();
 			stream.advance(CSS_COMMENT, 2);
 			return;
 		}
@@ -330,9 +333,13 @@ bool Scss::selectorElement(StyleStream &stream)
 		while (true)
 		{
 			c = stream.peek();
-			if (c < '0' || c == '{' || c == '}') return true;
+			if (c < 0 || c == '{' || c == '}') return true;
 			else if (c == '\r' || c == '\n') stream.advanceEol();
-			else if (c == ')') break;
+			else if (c == ')')
+			{
+				stream.advance(OPERATOR);
+				break;
+			}
 			else stream.advance(OPERATOR);
 		}
 		stream.advance(OPERATOR);
@@ -373,6 +380,8 @@ void Scss::declarationBlock(StyleStream &stream)
 {
 	assert(stream.peek() == '{');
 	stream.advance(OPERATOR);
+	stream.foldHeader(stream.foldLevel());
+	stream.increaseFoldNext();
 	while (true)
 	{
 		stream.advanceSpTab();
@@ -389,6 +398,7 @@ void Scss::declarationBlock(StyleStream &stream)
 		else if (c == '}')
 		{
 			stream.advance(OPERATOR);
+			stream.reduceFoldNext();
 			return;
 		}
 		else if (c == ' ' || c == '\t') stream.advanceSpTab();

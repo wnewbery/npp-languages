@@ -15,13 +15,13 @@
 // along with this program.If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifdef ERROR
-#undef ERROR
-#endif
 
 #include "BaseLexer.h"
 #include <memory>
 
+#ifdef ERROR
+#undef ERROR
+#endif
 /**Ends on the first ASCII value that is not '-', '_', a letter or a number.*/
 void advanceXmlName(StyleStream &stream, char style);
 unsigned xmlNameLen(StyleStream &stream);

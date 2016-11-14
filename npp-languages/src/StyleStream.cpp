@@ -16,10 +16,108 @@
 
 #include "StyleStream.h"
 #include <ILexer.h>
+#include <Scintilla.h>
+#include <fstream>
+#include <iomanip>
+#include <Windows.h>
+
+BaseSegmentedStream::~BaseSegmentedStream()
+{
+	//dumpFolds();
+}
+
+void BaseSegmentedStream::advanceEol(char style)
+{
+	assert(!eof());
+	auto c = peek();
+	auto nextFold = _nextFold > 0 ? _nextFold : fold();
+	if (c == '\n')
+	{
+		_sections[_section]._styles[_pos] = style;
+		++_line;
+		++_pos;
+		nextSection();
+	}
+	else
+	{
+		assert(c == '\r');
+		_sections[_section]._styles[_pos] = style;
+		++_line;
+		++_pos;
+		nextSection();
+		if (peek() == '\n')
+		{
+			_sections[_section]._styles[_pos] = style;
+			++_pos;
+			nextSection();
+		}
+	}
+	_nextFold = 0;
+	fold(nextFold);
+	lineState(0);
+}
 
 void BaseSegmentedStream::lineState(unsigned state)
 {
 	if (_doc) _doc->SetLineState((int)_line, (int)state);
+}
+void BaseSegmentedStream::fold(int line, int level)
+{
+	if (_doc) _doc->SetLevel(line, level);
+}
+void BaseSegmentedStream::foldHeader(int line, int level)
+{
+	fold(line, (level + SC_FOLDLEVELBASE) | SC_FOLDLEVELHEADERFLAG);
+}
+void BaseSegmentedStream::foldNext(int level)
+{
+	foldNextRaw(level + SC_FOLDLEVELBASE);
+}
+int BaseSegmentedStream::fold()
+{
+	return _doc ? _doc->GetLevel((int)_line) : SC_FOLDLEVELBASE;
+}
+int BaseSegmentedStream::foldLevel()
+{
+	return (fold() & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE;
+}
+void BaseSegmentedStream::relFoldNext(int levels)
+{
+	int current = _nextFold ? _nextFold : (fold() & SC_FOLDLEVELNUMBERMASK);
+	if (levels < 0)
+	{
+		int currentLevels = (current & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE;
+		if (currentLevels - levels < 0) levels = -currentLevels;
+	}
+	_nextFold = current + levels;
+}
+void BaseSegmentedStream::foldIndent(int indent)
+{
+	if (_line > 0)
+	{
+		auto prev = _doc->GetLevel(_line - 1);
+		if ((prev & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE < indent)
+		{
+			_doc->SetLevel(_line - 1, prev | SC_FOLDLEVELHEADERFLAG);
+		}
+	}
+	fold(SC_FOLDLEVELBASE + indent);
+}
+void BaseSegmentedStream::dumpFolds()
+{
+	if (!_doc) return;
+	std::fstream fs("fold.txt", std::ios::trunc | std::ios::out);
+	fs << std::hex << std::setfill('0');
+	int lines = _doc->LineFromPosition(_doc->Length() - 1);
+	for (int i = 0; i < lines; ++i)
+	{
+		int level = _doc->GetLevel(i);
+		fs << std::setw(4) << level << ' ';
+		fs << std::setw(4) << ((level & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE) << ' ';
+		fs << ((level & SC_FOLDLEVELWHITEFLAG) ? "W " : "  ");
+		fs << ((level & SC_FOLDLEVELHEADERFLAG) ? "H " : "  ");
+		fs << std::endl;
+	}
 }
 
 DocumentStyleStream::DocumentStyleStream(IDocument *doc)
@@ -34,6 +132,8 @@ DocumentStyleStream::DocumentStyleStream(IDocument *doc)
 	addSection(src.get(), styles.get(), len, 0);
 	src.release();
 	styles.release();
+
+	fold(SC_FOLDLEVELBASE);
 }
 DocumentStyleStream::DocumentStyleStream(IDocument *doc, unsigned line, unsigned len)
 	: StyleStream(), _startPos(0)
@@ -49,6 +149,9 @@ DocumentStyleStream::DocumentStyleStream(IDocument *doc, unsigned line, unsigned
 	addSection(src.get(), styles.get(), len, line);
 	src.release();
 	styles.release();
+
+	if (_line > 0) fold(_doc->GetLevel(_line - 1));
+	else fold(SC_FOLDLEVELBASE);
 }
 DocumentStyleStream::~DocumentStyleStream()
 {

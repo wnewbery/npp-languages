@@ -33,7 +33,15 @@ inline bool isAlphaNumeric(int c)
 class BaseSegmentedStream
 {
 public:
-	BaseSegmentedStream() : _sections(), _section(0), _pos(0), _line(0) {}
+	BaseSegmentedStream()
+		: _sections(), _section(0), _pos(0), _line(0), _doc(nullptr), _nextFold(0) {}
+	explicit BaseSegmentedStream(BaseSegmentedStream &stream)
+		:BaseSegmentedStream()
+	{
+		_doc = stream._doc;
+	}
+
+	~BaseSegmentedStream();
 
 	bool eof()const
 	{
@@ -53,7 +61,7 @@ public:
 				++section;
 				pos = 0;
 			}
-			if (section >= _sections.size()) return -1;
+			if (section >= (int)_sections.size()) return -1;
 			if (i == p) break;
 			++i;
 			++pos;
@@ -66,36 +74,14 @@ public:
 		auto &sec = _sections.back();
 		return (unsigned char)sec._src[sec._len - 1];
 	}
-	/**Style EOL and update line number.*/
-	void advanceEol(char style = 0)
-	{
-		assert(!eof());
-		auto c = peek();
-		if (c == '\n')
-		{
-			_sections[_section]._styles[_pos] = style;
-			++_line;
-			++_pos;
-			lineState(0);
-			nextSection();
-		}
-		else
-		{
-			assert(c == '\r');
-			_sections[_section]._styles[_pos] = style;
-			++_line;
-			++_pos;
-			lineState(0);
-			nextSection();
-			if (peek() == '\n')
-			{
-				_sections[_section]._styles[_pos] = style;
-				++_pos;
-				nextSection();
-			}
-			return;
-		}
-	}
+	/**Style EOL and update line number.
+	 *
+	 * If _nextFold is positive then then newline will use that and set _nextFold to 0
+	 * otherwise the new line will copy the line folding from the previous line.
+	 *
+	 * The newlines state is set to 0.
+	 */
+	void advanceEol(char style = 0);
 	unsigned eolLen(unsigned start = 0)const
 	{
 		auto c = peek(start);
@@ -124,7 +110,7 @@ public:
 		{
 			assert(!stream.eof());
 			const auto &sec = stream._sections[stream._section];
-			Section newSec = {sec._src + stream._pos, sec._styles + stream._pos, stream._line};
+			Section newSec = {sec._src + stream._pos, sec._styles + stream._pos, 0, stream._line};
 			unsigned remaining = sec._len - stream._pos;
 			if (len <= remaining) newSec._len = len;
 			else newSec._len = remaining;
@@ -133,11 +119,46 @@ public:
 			_sections.push_back(newSec);
 			stream.skip(newSec._len);
 			len -= newSec._len;
+			if (_sections.size() == 1) _line = newSec._line;
 		}
 	}
 
 	/**Set the persistant state for the current line.*/
-	void lineState(unsigned state);
+	void lineState(unsigned state);	//fold current line
+	/**Get the current line number.*/
+	int line()const { return _line; }
+	void fold(int line, int level);
+	/**Set the current lines fold level.*/
+	void fold(int level) { fold(line(), level); }
+	void foldHeader(int line, int level);
+	/**Set the current lines fold level with the header flag.*/
+	void foldHeader(int level) { foldHeader(line(), level); }
+	/**Set the next lines fold level.*/
+	void foldNextRaw(int level) { _nextFold = level; }
+	void foldNext(int level);
+	int fold();
+	/**Gets the number of nested fold levels.
+	 * fold() & SC_FOLDLEVELNUMBERMASK
+	 */
+	int foldLevel();
+	void reduceFold()
+	{
+		int f = fold() - 1;
+		fold(f > 0 ? f : 0);
+	}
+	/**Increases the fold level of the next line by 1.*/
+	void increaseFoldNext() { relFoldNext(1); }
+	/**Reduces the fold level of the next line by 1.*/
+	void reduceFoldNext() { relFoldNext(-1); }
+	/**Modifies the fold level of the next line by a relative amount.*/
+	void relFoldNext(int levels);
+	/**Indent based folding.
+	 * Set this lines fold level, and if the previous line was less make the previous line a header.
+	 */
+	void foldIndent(int indent);
+
+	/**Debug aid, writes a file "fold.txt" in the working directory for the entire document.*/
+	void dumpFolds();
 protected:
 	void addSection(const char *src, char *styles, unsigned len, unsigned line)
 	{
@@ -167,6 +188,10 @@ private:
 	/**Current document line number.*/
 	unsigned _line;
 	IDocument *_doc;
+	/**Fold level to use for the next line.
+	 * See advanceEol
+	 */
+	int _nextFold;
 	/**Moves to next _section if _pos reached the end.*/
 	void nextSection()
 	{
@@ -215,6 +240,7 @@ public:
 	enum SingleLineTag { singleLineTag };
 
 	StyleStream() : BaseSegmentedStream() {}
+	explicit StyleStream(StyleStream &stream) : BaseSegmentedStream(stream) {}
 	StyleStream(StyleStream &stream, SingleLineTag)
 		: StyleStream()
 	{
@@ -447,8 +473,6 @@ public:
 			else advance(style);
 		}
 	}
-	//fold current line
-	void foldLevel(int level) {}
 protected:
 };
 

@@ -59,6 +59,8 @@ public:
 	void stringLine(StyleStream &stream);
 	/**Interpolated string content.*/
 	void stringInterp(StyleStream &stream);
+	/**Statement start first token on a line, or after ';'.*/
+	void statementStart(StyleStream &stream);
 	/**Some token on the line.*/
 	void token(StyleStream &stream);
 	/**Name string for variable, symbol, etc.*/
@@ -68,4 +70,6 @@ public:
 	 * @return Offset of #{, end of line, or end of file.
 	 */
 	unsigned findNextInterp(StyleStream &stream);
+	/**Reads an upcoming instruction word.*/
+	std::string peekInstruction(StyleStream &stream);
 };

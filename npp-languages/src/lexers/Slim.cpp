@@ -54,6 +54,7 @@ void SCI_METHOD Slim::Lex(unsigned int startPos, int lengthDoc, int initStyle, I
 void Slim::line(StyleStream &stream)
 {
 	stream.lineState(SAFE_START);
+	stream.foldIndent(_currentIndent);
 	if (stream.eof()) return;
 	switch (stream.peek())
 	{
@@ -111,6 +112,7 @@ void Slim::commentBlock(StyleStream &stream, Style style)
 			_currentIndent = indent;
 			return;
 		}
+		stream.foldIndent(_currentIndent + 1);
 	}
 }
 void Slim::commentBlock(StyleStream &stream)
@@ -395,9 +397,15 @@ void Slim::filterBlock(StyleStream &stream)
 	if (n > 0)
 	{
 		_currentIndent = indent;
-		StyleStream blockStream;
+		StyleStream blockStream(stream);
 		blockStream.addSection(stream, n);
-		while (!blockStream.eof()) blockStream.advanceLine(FILTER);
+		bool first = true;
+		while (!blockStream.eof())
+		{
+			if (!first) blockStream.foldIndent(_currentIndent + 1);
+			first = false;
+			blockStream.advanceLine(FILTER);
+		}
 		//_ruby.style(blockStream);
 	}
 }
