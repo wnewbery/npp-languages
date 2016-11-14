@@ -25,6 +25,11 @@ namespace
 		"ruby", "javascript", "css", "sass", "scss", "less", "styl", "coffee", "asciidoc",
 		"markdown", "textile", "creole", "wiki", "mediawiki", "rdoc", "nokogiri", "none"
 	};
+	// Engines with interpolation done by Slim
+	std::unordered_set<std::string> INTERPOLATED_ENGINES =
+	{
+		"markdown"
+	};
 }
 
 void Slim::style(StyleStream &stream)
@@ -78,7 +83,7 @@ void Slim::line(StyleStream &stream)
 		if (stream.peek(n) == ':')
 		{
 			auto name = stream.peekStr(n);
-			if (ENGINES.count(name)) return filterBlock(stream);
+			if (ENGINES.count(name)) return filterBlock(stream, name);
 			else return tagName(stream);
 		}
 		else if (stream.matches("include"))
@@ -95,7 +100,7 @@ void Slim::tagOrFilter(StyleStream &stream)
 	if (stream.peek(n) == ':')
 	{
 		auto name = stream.peekStr(n);
-		if (ENGINES.count(name)) return filterBlock(stream);
+		if (ENGINES.count(name)) return filterBlock(stream, name);
 		else return tagName(stream);
 	}
 	else return tagName(stream);
@@ -379,35 +384,54 @@ void Slim::rubyBlock(StyleStream &stream)
 	}
 }
 
-void Slim::filterBlock(StyleStream &stream)
+void Slim::filterBlock(StyleStream &stream, const std::string &engine)
 {
+	assert(stream.matches(engine.c_str()) && stream.peek((unsigned)engine.size()) == ':');
+	stream.advance(FILTER, engine.size() + 1);
 	unsigned indent = _currentIndent;
-	unsigned n = 0;
+	StyleStream blockStream(stream);
+
+	bool interpolate = INTERPOLATED_ENGINES.count(engine) > 0;
+	// Create stream of segments
 	while (true)
 	{
-		auto n2 = stream.fullLineLen(n);
-		assert(n2 > 0 || stream.peek(n) < 0);
-		if (!n2) break;
-		n += n2;
-
-		indent = stream.countSp(n);
-		n += indent;
-		if (indent <= _currentIndent) break;
-	}
-	if (n > 0)
-	{
-		_currentIndent = indent;
-		StyleStream blockStream(stream);
-		blockStream.addSection(stream, n);
-		bool first = true;
-		while (!blockStream.eof())
+		if (interpolate)
 		{
-			if (!first) blockStream.foldIndent(_currentIndent + 1);
-			first = false;
-			blockStream.advanceLine(FILTER);
+			while (true)
+			{
+				unsigned i = _ruby.findNextInterp(stream);
+				if (stream.peekEol(i))
+				{
+					blockStream.addLineWithEol(stream); // Rest of this line
+					break;
+				}
+				else
+				{
+					if (i > 0) blockStream.addSection(stream, i); // Text before
+					assert(stream.peek() == '#' && stream.peek(1) == '{');
+					_ruby.stringInterp(stream);
+				}
+			}
 		}
-		//_ruby.style(blockStream);
+		else blockStream.addLineWithEol(stream); // Rest of this line
+		if (stream.peekNextIndent() <= indent)
+		{
+			_currentIndent = stream.advanceNextIndent();
+			break;
+		}
+		else
+		{
+			stream.advance(FILTER, indent);
+		}
 	}
+
+	blockStream.foldHeader(0);
+	blockStream.baseFoldLevel(indent + 1);
+	blockStream.foldNext(1);
+
+	if (engine == "ruby") _ruby.style(blockStream);
+	else if (engine == "markdown") _markdown.style(blockStream);
+	else while (!blockStream.eof()) blockStream.advanceLine(FILTER);
 }
 
 void Slim::includeLine(StyleStream &stream)

@@ -16,6 +16,7 @@
 
 #pragma once
 #include "BaseLexer.h"
+#include "Markdown.h"
 #include "Ruby.h"
 #include "Html.h"
 #include <memory>
@@ -48,8 +49,9 @@ private:
 		INCLUDE = 6,
 		DOCTYPE = Html::DOCTYPE
 	};
-	Ruby _ruby;
 	Html _html;
+	Markdown _markdown;
+	Ruby _ruby;
 	unsigned _currentIndent;
 
 	void line(StyleStream &stream);
@@ -62,7 +64,7 @@ private:
 
 	void textBlock(StyleStream &stream);
 	void rubyBlock(StyleStream &stream);
-	void filterBlock(StyleStream &stream);
+	void filterBlock(StyleStream &stream, const std::string &engine);
 
 	void includeLine(StyleStream &stream);
 	void doctypeLine(StyleStream &stream);

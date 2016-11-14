@@ -34,12 +34,9 @@ class BaseSegmentedStream
 {
 public:
 	BaseSegmentedStream()
-		: _sections(), _section(0), _pos(0), _line(0), _doc(nullptr), _nextFold(0) {}
-	explicit BaseSegmentedStream(BaseSegmentedStream &stream)
-		:BaseSegmentedStream()
-	{
-		_doc = stream._doc;
-	}
+		: _sections(), _section(0), _pos(0), _line(0), _doc(nullptr)
+		, _baseFoldLevel(0), _nextFold(0) {}
+	explicit BaseSegmentedStream(BaseSegmentedStream &stream);
 
 	~BaseSegmentedStream();
 
@@ -122,6 +119,10 @@ public:
 			if (_sections.size() == 1) _line = newSec._line;
 		}
 	}
+	/**Set the base fold level. All calls to the fold related methods will have this added or
+	 * removed.
+	 */
+	void baseFoldLevel(int level) { _baseFoldLevel = level; }
 
 	/**Set the persistant state for the current line.*/
 	void lineState(unsigned state);	//fold current line
@@ -188,6 +189,7 @@ private:
 	/**Current document line number.*/
 	unsigned _line;
 	IDocument *_doc;
+	int _baseFoldLevel;
 	/**Fold level to use for the next line.
 	 * See advanceEol
 	 */
@@ -314,6 +316,17 @@ public:
 	{
 		return countChr(' ', start);
 	}
+	unsigned peekNextIndent(unsigned start = 0)const
+	{
+		unsigned p = 0;
+		while (true)
+		{
+			auto c = peek(p + start);
+			if (c == ' ' || c == '\t') ++p;
+			else break;
+		}
+		return p;
+	}
 	unsigned countChr(char c, unsigned start = 0)const
 	{
 		unsigned p = 0;
@@ -355,6 +368,11 @@ public:
 		}
 	}
 
+	bool peekEol(unsigned start = 0)const
+	{
+		auto c = peek(start);
+		return c < 0 || c == '\r' || c == '\n';
+	}
 	unsigned lineLen(unsigned start = 0)const
 	{
 		unsigned p = start;
@@ -457,7 +475,7 @@ public:
 			}
 			else if (c == ' ' || c == '\t')
 			{
-				advance(0);
+				advance(style);
 				++indent;
 			}
 			else return indent;

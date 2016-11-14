@@ -21,9 +21,15 @@
 #include <iomanip>
 #include <Windows.h>
 
+BaseSegmentedStream::BaseSegmentedStream(BaseSegmentedStream &stream)
+	: BaseSegmentedStream()
+{
+	_doc = stream._doc;
+	_baseFoldLevel = stream.foldLevel();
+}
 BaseSegmentedStream::~BaseSegmentedStream()
 {
-	//dumpFolds();
+	dumpFolds();
 }
 
 void BaseSegmentedStream::advanceEol(char style)
@@ -63,7 +69,11 @@ void BaseSegmentedStream::lineState(unsigned state)
 }
 void BaseSegmentedStream::fold(int line, int level)
 {
-	if (_doc) _doc->SetLevel(line, level);
+	if (_doc)
+	{
+		level += _baseFoldLevel;
+		_doc->SetLevel(line, level);
+	}
 }
 void BaseSegmentedStream::foldHeader(int line, int level)
 {
@@ -75,7 +85,7 @@ void BaseSegmentedStream::foldNext(int level)
 }
 int BaseSegmentedStream::fold()
 {
-	return _doc ? _doc->GetLevel((int)_line) : SC_FOLDLEVELBASE;
+	return _doc ? (_doc->GetLevel((int)_line) - _baseFoldLevel) : SC_FOLDLEVELBASE;
 }
 int BaseSegmentedStream::foldLevel()
 {
@@ -98,7 +108,7 @@ void BaseSegmentedStream::foldIndent(int indent)
 		auto prev = _doc->GetLevel(_line - 1);
 		if ((prev & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE < indent)
 		{
-			_doc->SetLevel(_line - 1, prev | SC_FOLDLEVELHEADERFLAG);
+			fold(_line - 1, prev | SC_FOLDLEVELHEADERFLAG);
 		}
 	}
 	fold(SC_FOLDLEVELBASE + indent);
