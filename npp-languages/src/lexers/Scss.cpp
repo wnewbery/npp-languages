@@ -113,7 +113,12 @@ bool Scss::basicStatement(StyleStream &stream)
 		stream.advance(OPERATOR);
 		return true;
 	case '@':
-		if (stream.matches("include", 1))
+		if (stream.matches("import"), 1)
+		{
+			import(stream);
+			return true;
+		}
+		else if (stream.matches("include", 1))
 		{
 			stream.advance(OPERATOR, sizeof("@include") - 1);
 			assignment(stream);
@@ -465,3 +470,18 @@ void Scss::mixin(StyleStream &stream)
 	if (stream.peek() == '{') declarationBlock(stream);
 	else errorStatement(stream);
 }
+void Scss::import(StyleStream &stream)
+{
+	assert(stream.matches("@import"));
+	stream.advance(OPERATOR, sizeof("@import") - 1);
+
+	stream.advanceSpTab();
+	auto c = stream.peek();
+	if (c != '"' && c != '\'') return errorStatement(stream);
+	string(stream);
+
+	stream.advanceSpTab();
+	if (stream.peek() != ';') return errorStatement(stream);
+	stream.advance(OPERATOR);
+}
+

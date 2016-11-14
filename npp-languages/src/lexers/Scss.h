@@ -71,6 +71,7 @@ public:
 
 	void mediaQuery(StyleStream &stream);
 	void mixin(StyleStream &stream);
+	void import(StyleStream &stream);
 private:
 	/**True if SCSS, else CSS.*/
 	bool _scss;
