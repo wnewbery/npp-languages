@@ -94,12 +94,10 @@ int BaseSegmentedStream::foldLevel()
 void BaseSegmentedStream::relFoldNext(int levels)
 {
 	int current = _nextFold ? _nextFold : (fold() & SC_FOLDLEVELNUMBERMASK);
-	if (levels < 0)
-	{
-		int currentLevels = (current & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE;
-		if (currentLevels - levels < 0) levels = -currentLevels;
-	}
-	_nextFold = current + levels;
+	int currentLevel = (current & SC_FOLDLEVELNUMBERMASK) - SC_FOLDLEVELBASE;
+	int newLevel = currentLevel + levels;
+	if (newLevel < 0) newLevel = 0;
+	_nextFold = (current & ~SC_FOLDLEVELNUMBERMASK) | (newLevel + SC_FOLDLEVELBASE);
 }
 void BaseSegmentedStream::foldIndent(int indent)
 {
