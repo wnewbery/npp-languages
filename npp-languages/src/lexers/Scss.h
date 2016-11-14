@@ -24,6 +24,8 @@
 class Scss : public BaseLexer
 {
 public:
+	Scss() : _scss(true) {}
+	explicit Scss(bool scss) : _scss(scss) {}
 	enum Style
 	{
 		DEFAULT = 0,
@@ -69,4 +71,7 @@ public:
 
 	void mediaQuery(StyleStream &stream);
 	void mixin(StyleStream &stream);
+private:
+	/**True if SCSS, else CSS.*/
+	bool _scss;
 };

@@ -28,6 +28,8 @@
 class Slim : public BaseLexer
 {
 public:
+	Slim();
+
 	virtual void style(StyleStream &stream)override;
 	virtual void SCI_METHOD Lex(unsigned int startPos, int lengthDoc, int initStyle, IDocument *pAccess)override;
 private:
@@ -53,6 +55,7 @@ private:
 	Html _html;
 	Markdown _markdown;
 	Ruby _ruby;
+	Scss _css;
 	Scss _scss;
 	unsigned _currentIndent;
 

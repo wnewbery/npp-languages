@@ -28,9 +28,14 @@ namespace
 	// Engines with interpolation done by Slim
 	std::unordered_set<std::string> INTERPOLATED_ENGINES =
 	{
-		"markdown"
+		"css", "markdown"
 	};
 }
+
+Slim::Slim()
+	: _html(), _markdown(), _ruby(), _css(false), _scss(true)
+	, _currentIndent(0)
+{}
 
 void Slim::style(StyleStream &stream)
 {
@@ -425,14 +430,17 @@ void Slim::filterBlock(StyleStream &stream, const std::string &engine)
 		}
 	}
 
-	blockStream.foldHeader(0);
+	int firstLine = blockStream.line();
 	blockStream.baseFoldLevel(indent + 1);
-	blockStream.foldNext(1);
+	blockStream.foldNext(0);
 
-	if (engine == "ruby") _ruby.style(blockStream);
+	if (engine == "css") _css.style(blockStream);
 	else if (engine == "markdown") _markdown.style(blockStream);
+	else if (engine == "ruby") _ruby.style(blockStream);
 	else if (engine == "scss") _scss.style(blockStream);
 	else while (!blockStream.eof()) blockStream.advanceLine(FILTER);
+
+	stream.foldHeader(firstLine, indent);
 }
 
 void Slim::includeLine(StyleStream &stream)

@@ -92,7 +92,7 @@ bool Scss::basicStatement(StyleStream &stream)
 	if (c == '/')
 	{
 		auto c2 = stream.peek(1);
-		if (c2 == '/')
+		if (c2 == '/' && _scss)
 		{
 			stream.advanceLine(SCSS_COMMENT);
 			return true;
@@ -106,7 +106,8 @@ bool Scss::basicStatement(StyleStream &stream)
 	switch (c)
 	{
 	case '$':
-		variableDef(stream);
+		if (_scss) variableDef(stream);
+		else stream.advanceLine(ERROR);
 		return true;
 	case ';':
 		stream.advance(OPERATOR);
@@ -118,7 +119,7 @@ bool Scss::basicStatement(StyleStream &stream)
 			assignment(stream);
 			return true;
 		}
-		else if (stream.matches("extend", 1))
+		else if (_scss && stream.matches("extend", 1))
 		{
 			stream.advance(OPERATOR, sizeof("@extend") - 1);
 			assignment(stream);
@@ -129,7 +130,7 @@ bool Scss::basicStatement(StyleStream &stream)
 			mediaQuery(stream);
 			return true;
 		}
-		else if (stream.matches("mixin", 1))
+		else if (_scss && stream.matches("mixin", 1))
 		{
 			mixin(stream);
 			return true;
@@ -299,8 +300,12 @@ void Scss::selector(StyleStream &stream)
 		}
 		else if (c == '{')
 		{
-			declarationBlock(stream);
-			break;
+			if (_scss || stream.foldLevel() == 0)
+			{
+				declarationBlock(stream);
+				break;
+			}
+			else stream.advance(ERROR);
 		}
 		else if (c == '}') break;
 		else if (!selectorElement(stream)) break;
