@@ -431,6 +431,7 @@ void Slim::filterBlock(StyleStream &stream, const std::string &engine)
 
 	if (engine == "ruby") _ruby.style(blockStream);
 	else if (engine == "markdown") _markdown.style(blockStream);
+	else if (engine == "scss") _scss.style(blockStream);
 	else while (!blockStream.eof()) blockStream.advanceLine(FILTER);
 }
 

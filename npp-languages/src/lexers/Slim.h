@@ -19,6 +19,7 @@
 #include "Markdown.h"
 #include "Ruby.h"
 #include "Html.h"
+#include "Scss.h"
 #include <memory>
 /**Lexer for http://slim-lang.com/
  * Because most of Slim is context sensitive, this implements a near complete parser, rather than
@@ -36,7 +37,7 @@ private:
 	enum Style
 	{
 		DEFAULT = Ruby::DEFAULT,
-		ERROR = Ruby::DEFAULT,
+		ERROR = Ruby::ERROR,
 		OPERATOR = Ruby::OPERATOR,
 		ID = 2,
 		CLS = 3,
@@ -52,6 +53,7 @@ private:
 	Html _html;
 	Markdown _markdown;
 	Ruby _ruby;
+	Scss _scss;
 	unsigned _currentIndent;
 
 	void line(StyleStream &stream);
