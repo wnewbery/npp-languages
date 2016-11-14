@@ -29,7 +29,7 @@ BaseSegmentedStream::BaseSegmentedStream(BaseSegmentedStream &stream)
 }
 BaseSegmentedStream::~BaseSegmentedStream()
 {
-	dumpFolds();
+	//dumpFolds();
 }
 
 void BaseSegmentedStream::advanceEol(char style)
