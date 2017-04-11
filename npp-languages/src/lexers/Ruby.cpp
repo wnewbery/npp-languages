@@ -69,7 +69,7 @@ void Ruby::styleLine(StyleStream &stream)
 	while (true)
 	{
 		stream.advanceSpTab();
-		char c = stream.peek();
+		int c = stream.peek();
 		if (c < 0) return;
 		else if (c == '\r' || c == '\n')
 		{
@@ -281,18 +281,16 @@ void Ruby::token(StyleStream &stream)
 	}
 	case '%':
 	{
+		// Ruby parsing for '%' is complex
+		// https://en.wikibooks.org/wiki/Ruby_Programming/Syntax/Literals#The_.25_Notation
 		Style strStyle = STRING;
 		bool interpolated = true;
 		int c1 = stream.peek(1);
-		unsigned n = 2;
-		if (c1 < 0)
-		{
-			stream.advance(OPERATOR);
-			break;
-		}
-		int delimL = c1;
+		unsigned n = 2;// '%' + delimL
 
-		switch ((char)c1)
+		int delimL = c1;
+		// Look for modifier, else c1 maybe a delimiter, else just a '%' operator
+		switch (c1)
 		{
 		case 'r':
 			strStyle = REGEX;
@@ -324,12 +322,19 @@ void Ruby::token(StyleStream &stream)
 			++n;
 			break;
 		}
-		if (delimL < 0)
+
+		// If did not find an ASCII symbol, assume its a operator not a string
+		if (delimL < 0 || !(
+			(delimL >= '!' && delimL <= '/') ||
+			(delimL >= ':' && delimL <= '@') ||
+			(delimL >= '[' && delimL <= '`') ||
+			(delimL >= '{' && delimL <= '~')))
 		{
 			stream.advance(OPERATOR);
 			break;
 		}
 
+		// Bracket symbols use open/close
 		char delimR;
 		switch (delimL)
 		{
