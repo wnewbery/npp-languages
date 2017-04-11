@@ -113,7 +113,7 @@ bool Scss::basicStatement(StyleStream &stream)
 		stream.advance(OPERATOR);
 		return true;
 	case '@':
-		if (stream.matches("import"), 1)
+		if (stream.matches("import", 1))
 		{
 			import(stream);
 			return true;
