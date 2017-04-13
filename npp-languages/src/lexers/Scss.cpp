@@ -348,7 +348,7 @@ bool Scss::selectorElement(StyleStream &stream)
 			else if (c == ')')
 			{
 				stream.advance(OPERATOR);
-				break;
+				return true;
 			}
 			else stream.advance(OPERATOR);
 		}
